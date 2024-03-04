@@ -15,6 +15,7 @@ export const event = pgTable("event", {
     idKudyznudy: text("id_kudyznudy").unique(),
     title: text("title").notNull(),
     description: text("description"),
+    category: integer("id_category").references(() => category.id),
     images: json("images").default([]),
 });
 export const schedule = pgTable("schedules", {
@@ -40,11 +41,6 @@ export const tag = pgTable("tags", {
     idKudyznudy: text("id_kudyznudy").unique(),
     title: text("title"),
 });
-export const eventCategory = pgTable("event_category", {
-    id: serial("id").primaryKey(),
-    event: integer("id_event").references(() => event.id).notNull(),
-    category: integer("id_category").references(() => category.id).notNull(),
-});
 export const eventTag = pgTable("event_tags", {
     id: serial("id").primaryKey(),
     event: integer("id_event").references(() => event.id).notNull(),
@@ -53,9 +49,12 @@ export const eventTag = pgTable("event_tags", {
 export const venueRelations = relations(venue, ({many}) => ({
     schedules: many(schedule),
 }));
-export const eventRelations = relations(event, ({many}) => ({
+export const eventRelations = relations(event, ({one, many}) => ({
     schedules: many(schedule),
-    categories: many(eventCategory),
+    category: one(category, {
+        fields: [event.category],
+        references: [category.id],
+    }),
     tags: many(eventTag),
 }));
 export const schedulesRelations = relations(schedule, ({one}) => ({
@@ -69,20 +68,10 @@ export const schedulesRelations = relations(schedule, ({one}) => ({
     }),
 }));
 export const categoryRelations = relations(category, ({many}) => ({
-    events: many(eventCategory),
+    events: many(event),
 }));
 export const tagsRelations = relations(tag, ({many}) => ({
     events: many(eventTag),
-}));
-export const eventCategoryRelations = relations(eventCategory, ({one}) => ({
-    event: one(event, {
-        fields: [eventCategory.event],
-        references: [event.id],
-    }),
-    category: one(category, {
-        fields: [eventCategory.category],
-        references: [category.id],
-    }),
 }));
 export const eventTagsRelations = relations(eventTag, ({one}) => ({
     event: one(event, {

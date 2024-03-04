@@ -31,13 +31,13 @@ export const schedule = pgTable("schedules", {
 });
 export const category = pgTable("category", {
     id: serial("id").primaryKey(),
-    idGoout: integer("id_goout").unique(),
+    idGoout: text("id_goout").unique(),
     idKudyznudy: text("id_kudyznudy").unique(),
     title: text("title"),
 });
 export const tag = pgTable("tags", {
     id: serial("id").primaryKey(),
-    idGoout: integer("id_goout").unique(),
+    idGoout: text("id_goout").unique(),
     idKudyznudy: text("id_kudyznudy").unique(),
     title: text("title"),
 });

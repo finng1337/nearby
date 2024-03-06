@@ -1,0 +1,2 @@
+export const API_URL = "https://nearby.vercel.app/api/cron";
+export const GOUT_API_URL = "https://goout.net/services/entities/v1/schedules?languages[]=cs&countryIsos[]=cz&notScheduleTags[]=online&grouped=true&include=events,venues,images";

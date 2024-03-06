@@ -26,8 +26,8 @@ export const schedule = pgTable("schedules", {
     event: integer("id_event").references(() => event.id).notNull(),
     urlGoout: text("url_goout"),
     urlKudyznudy: text("url_kudyznudy"),
-    startAt: date("start_at"),
-    endAt: date("end_at"),
+    startAt: date("start_at").notNull(),
+    endAt: date("end_at").notNull(),
 });
 export const category = pgTable("category", {
     id: serial("id").primaryKey(),

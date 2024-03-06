@@ -1,6 +1,5 @@
-import {addCategory} from "@/db/actions/categoryActions";
+import {addCategory, getCategoryIds} from "@/db/actions/categoryActions";
 import {InsertCategory} from "@/db/types";
-import {getCategoryIds} from "@/db/actions/categoryActions";
 
 export async function GET(request: Request) {
     const data = await getCategoryIds();

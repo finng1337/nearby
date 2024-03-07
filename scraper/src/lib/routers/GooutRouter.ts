@@ -9,6 +9,7 @@ export default class GooutRouter {
     private venues: Record<number, number> = {};
     private categories: Record<string, number> = {};
     private tags: Record<string, number> = {};
+    private page: number = 1;
     gooutRouter = createBasicRouter();
 
     constructor() {
@@ -151,12 +152,13 @@ export default class GooutRouter {
         const endTime = performance.now();
         const runTime = Math.floor(endTime - startTime);
 
-        if (runTime < 1000) {
-            console.log("Waiting for " + (1000 - runTime) + "ms");
-            await new Promise(r => setTimeout(r, 1000 - runTime));
+        if (runTime < 800) {
+            console.log("Waiting for " + (800 - runTime) + "ms");
+            await new Promise(r => setTimeout(r, 800 - runTime));
         }
 
-        console.log("Page processed");
+        console.log("Page " + this.page + " processed");
+        this.page++;
     };
 
     private addVenue = async (venue: object): Promise<number> => {

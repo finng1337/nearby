@@ -1,6 +1,6 @@
 import {BasicCrawlingContext, createBasicRouter} from "crawlee";
 import {GooutResponseType} from "../definitions.ts";
-import {gooutURL} from "../utils.ts";
+import {addCategory, addEvent, addEventTag, addSchedule, addTag, addVenue, gooutURL} from "../utils.ts";
 import {API_URL} from "../constants.js";
 
 export default class GooutRouter {
@@ -74,14 +74,14 @@ export default class GooutRouter {
         for (const event of responseJSON.included.events) {
             if (this.events[event.id] === undefined && !!event.locales.cs.name) {
                 if (this.categories[event.attributes.mainCategory] === undefined) {
-                    this.categories[event.attributes.mainCategory] = await this.addCategory({
+                    this.categories[event.attributes.mainCategory] = await addCategory({
                         idGoout: event.attributes.mainCategory,
                     });
 
                     console.log("Category " + event.attributes.mainCategory + " added");
                 }
 
-                this.events[event.id] = await this.addEvent({
+                this.events[event.id] = await addEvent({
                     idGoout: event.id,
                     title: event.locales.cs.name,
                     description: event.locales.cs.descriptionHtml,
@@ -93,14 +93,14 @@ export default class GooutRouter {
 
                 for (const tag of event.attributes.tags) {
                     if (this.tags[tag] === undefined) {
-                        this.tags[tag] = await this.addTag({
+                        this.tags[tag] = await addTag({
                             idGoout: tag,
                         });
 
                         console.log("Tag " + tag + " added");
                     }
 
-                    await this.addEventTag(this.events[event.id], this.tags[tag]);
+                    await addEventTag(this.events[event.id], this.tags[tag]);
 
                     console.log("Tag " + tag + " added to event " + event.locales.cs.name);
                 }
@@ -112,7 +112,7 @@ export default class GooutRouter {
                 if (!venue.locales.cs.name || !venue.attributes.longitude || !venue.attributes.latitude) {
                     continue;
                 }
-                this.venues[venue.id] = await this.addVenue({
+                this.venues[venue.id] = await addVenue({
                     idGoout: venue.id,
                     title: venue.locales.cs.name,
                     lon: venue.attributes.longitude,
@@ -136,12 +136,12 @@ export default class GooutRouter {
             }
 
             if (this.schedules[schedule.id] === undefined) {
-                this.schedules[schedule.id] = await this.addSchedule({
+                this.schedules[schedule.id] = await addSchedule({
                     idGoout: schedule.id,
                     venue: this.venues[schedule.relationships.venue.id],
                     event: this.events[schedule.relationships.event.id],
-                    startAt: schedule.attributes.startAt,
-                    endAt: schedule.attributes.endAt,
+                    startAt: new Date(schedule.attributes.startAt).toISOString(),
+                    endAt: new Date(schedule.attributes.endAt).toISOString(),
                     urlGoout: schedule.locales.cs.siteUrl,
                 });
 
@@ -160,83 +160,4 @@ export default class GooutRouter {
         console.log("Page " + this.page + " processed");
         this.page++;
     };
-
-    private addVenue = async (venue: object): Promise<number> => {
-        const response = await fetch(API_URL + "/venues", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(venue),
-        });
-
-        const responseJSON = await response.json();
-
-        return responseJSON.id;
-    }
-    private addEvent = async (event: object): Promise<number> => {
-        const response = await fetch(API_URL + "/events", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(event),
-        });
-
-        const responseJSON = await response.json();
-
-        return responseJSON.id;
-    }
-    private addCategory = async (category: object): Promise<number> => {
-        const response = await fetch(API_URL + "/categories", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(category),
-        });
-
-        const responseJSON = await response.json();
-
-        return responseJSON.id;
-    }
-    private addTag = async (tag: object): Promise<number> => {
-        const response = await fetch(API_URL + "/tags", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(tag),
-        });
-
-        const responseJSON = await response.json();
-
-        return responseJSON.id;
-    }
-    private addSchedule = async (schedule: object): Promise<number> => {
-        const response = await fetch(API_URL + "/schedules", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(schedule),
-        });
-
-        const responseJSON = await response.json();
-
-        return responseJSON.id;
-    }
-    private addEventTag = async (eventId: number, tagId: number): Promise<number> => {
-        const response = await fetch(API_URL + "/events/" + eventId + "/tags", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({id: tagId}),
-        });
-
-        const responseJSON = await response.json();
-
-        return responseJSON.id;
-    }
 }

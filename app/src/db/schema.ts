@@ -1,4 +1,4 @@
-import {date, integer, json, pgTable, serial, text} from "drizzle-orm/pg-core";
+import {integer, json, pgTable, serial, text, timestamp} from "drizzle-orm/pg-core";
 import {relations} from "drizzle-orm";
 
 export const venue = pgTable("venue", {
@@ -26,8 +26,8 @@ export const schedule = pgTable("schedules", {
     event: integer("id_event").references(() => event.id).notNull(),
     urlGoout: text("url_goout"),
     urlKudyznudy: text("url_kudyznudy"),
-    startAt: date("start_at").notNull(),
-    endAt: date("end_at").notNull(),
+    startAt: timestamp("start_at").notNull(),
+    endAt: timestamp("end_at").notNull(),
 });
 export const category = pgTable("category", {
     id: serial("id").primaryKey(),

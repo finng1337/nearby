@@ -65,15 +65,3 @@ export type GooutResponseType = {
         }[],
     }
 }
-
-export type Event = {
-    id: number,
-    idGoout: number,
-    idKudyznudy: string,
-    title: string,
-    descriptionHtml: string,
-    mainCategory: string,
-    categories: string[],
-    tags: string[],
-    images: string[],
-}

@@ -2,6 +2,7 @@
 
 import {useEffect} from "react";
 import {Loader} from "@googlemaps/js-api-loader";
+import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import styles from "@/components/Map.module.scss";
 import {GetVenuesResponse} from "@/db/types";
 
@@ -30,13 +31,16 @@ export default function Map(props: Props) {
                 mapTypeControl: false,
                 fullscreenControl: false,
             });
+            const clusterer = new MarkerClusterer({map});
 
             for (const venue of props.venues) {
-                new AdvancedMarkerElement({
+                const marker = new AdvancedMarkerElement({
                     map,
                     position: {lat: parseFloat(venue.lat), lng: parseFloat(venue.lon)},
                     title: venue.title,
                 });
+
+                clusterer.addMarker(marker);
             }
         });
     }, []);

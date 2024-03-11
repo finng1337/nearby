@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.6",
+    "@googlemaps/markerclusterer": "^2.5.3",
     "@vercel/postgres": "^0.7.2",
     "drizzle-orm": "^0.29.4",
     "next": "14.1.1",

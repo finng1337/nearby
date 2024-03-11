@@ -12,3 +12,9 @@ export type Tag = typeof tag.$inferSelect;
 export type InsertTag = typeof tag.$inferInsert;
 export type EventTag = typeof eventTag.$inferSelect;
 export type InsertEventTag = typeof eventTag.$inferInsert;
+export type GetVenuesResponse = {
+    id: number;
+    title: string;
+    lat: string;
+    lon: string;
+}[];

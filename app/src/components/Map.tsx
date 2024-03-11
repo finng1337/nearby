@@ -3,8 +3,12 @@
 import {useEffect} from "react";
 import {Loader} from "@googlemaps/js-api-loader";
 import styles from "@/components/Map.module.scss";
+import {GetVenuesResponse} from "@/db/types";
 
-export default function Map() {
+interface Props {
+    venues: GetVenuesResponse;
+}
+export default function Map(props: Props) {
 
     useEffect(() => {
         const loader = new Loader({
@@ -16,6 +20,7 @@ export default function Map() {
 
         loader.load().then(async () => {
             const { Map } = await google.maps.importLibrary("maps") as google.maps.MapsLibrary;
+            const { AdvancedMarkerElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary;
 
             const map = new Map(document.getElementById("map") as HTMLElement, {
                 mapId: "DEMO_MAP_ID",
@@ -25,6 +30,14 @@ export default function Map() {
                 mapTypeControl: false,
                 fullscreenControl: false,
             });
+
+            for (const venue of props.venues) {
+                new AdvancedMarkerElement({
+                    map,
+                    position: {lat: parseFloat(venue.lat), lng: parseFloat(venue.lon)},
+                    title: venue.title,
+                });
+            }
         });
     }, []);
 

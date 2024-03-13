@@ -18,7 +18,7 @@ export const event = pgTable("event", {
     category: integer("id_category").references(() => category.id),
     images: json("images").default([]),
 });
-export const schedule = pgTable("schedules", {
+export const schedule = pgTable("schedule", {
     id: serial("id").primaryKey(),
     idGoout: integer("id_goout").unique(),
     idKudyznudy: text("id_kudyznudy").unique(),
@@ -35,13 +35,13 @@ export const category = pgTable("category", {
     idKudyznudy: text("id_kudyznudy").unique(),
     title: text("title"),
 });
-export const tag = pgTable("tags", {
+export const tag = pgTable("tag", {
     id: serial("id").primaryKey(),
     idGoout: text("id_goout").unique(),
     idKudyznudy: text("id_kudyznudy").unique(),
     title: text("title"),
 });
-export const eventTag = pgTable("event_tags", {
+export const eventTag = pgTable("event_tag", {
     id: serial("id").primaryKey(),
     event: integer("id_event").references(() => event.id).notNull(),
     tags: integer("id_tags").references(() => tag.id).notNull(),

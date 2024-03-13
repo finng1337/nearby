@@ -3,7 +3,7 @@ import {tag} from "@/db/schema";
 import {Tag, InsertTag} from "@/db/types";
 
 export const getTagIds = async (): Promise<{id: number, idGoout: string | null, idKudyznudy: string | null}[]> => {
-    return await db.select({
+    return db.select({
         id: tag.id,
         idGoout: tag.idGoout,
         idKudyznudy: tag.idKudyznudy

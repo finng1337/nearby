@@ -3,7 +3,7 @@ import {event, eventTag} from "@/db/schema";
 import {InsertEvent, Event, EventTag} from "@/db/types";
 
 export const getEventsIds = async (): Promise<{id: number, idGoout: number | null, idKudyznudy: string | null}[]> => {
-    return await db.select({
+    return db.select({
         id: event.id,
         idGoout: event.idGoout,
         idKudyznudy: event.idKudyznudy

@@ -77,8 +77,6 @@ export default class GooutRouter {
                     this.categories[event.attributes.mainCategory] = await addCategory({
                         idGoout: event.attributes.mainCategory,
                     });
-
-                    console.log("Category " + event.attributes.mainCategory + " added");
                 }
 
                 this.events[event.id] = await addEvent({
@@ -89,20 +87,14 @@ export default class GooutRouter {
                     images: event.relationships.images.map(({id}) => images[id])
                 });
 
-                console.log("Event " + event.locales.cs.name + " added");
-
                 for (const tag of event.attributes.tags) {
                     if (this.tags[tag] === undefined) {
                         this.tags[tag] = await addTag({
                             idGoout: tag,
                         });
-
-                        console.log("Tag " + tag + " added");
                     }
 
                     await addEventTag(this.events[event.id], this.tags[tag]);
-
-                    console.log("Tag " + tag + " added to event " + event.locales.cs.name);
                 }
             }
         }
@@ -118,8 +110,6 @@ export default class GooutRouter {
                     lon: venue.attributes.longitude,
                     lat: venue.attributes.latitude,
                 });
-
-                console.log("Venue " + venue.locales.cs.name + " added");
             }
         }
 
@@ -144,20 +134,18 @@ export default class GooutRouter {
                     endAt: new Date(schedule.attributes.endAt).toISOString(),
                     urlGoout: schedule.locales.cs.siteUrl,
                 });
-
-                console.log("Schedule " + schedule.id + " added");
             }
         }
 
         const endTime = performance.now();
         const runTime = Math.floor(endTime - startTime);
 
+        console.log("Page " + this.page + " processed");
+
         if (runTime < 800) {
             console.log("Waiting for " + (800 - runTime) + "ms");
             await new Promise(r => setTimeout(r, 800 - runTime));
         }
-
-        console.log("Page " + this.page + " processed");
         this.page++;
     };
 }

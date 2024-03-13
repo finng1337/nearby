@@ -3,7 +3,7 @@ import {schedule} from "@/db/schema";
 import {Schedule, InsertSchedule} from "@/db/types";
 
 export const getScheduleIds = async (): Promise<{id: number, idGoout: number | null, idKudyznudy: string | null}[]> => {
-    return await db.select({
+    return db.select({
         id: schedule.id,
         idGoout: schedule.idGoout,
         idKudyznudy: schedule.idKudyznudy

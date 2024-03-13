@@ -3,7 +3,7 @@ import {category} from "@/db/schema";
 import {Category, InsertCategory} from "@/db/types";
 
 export const getCategoryIds = async (): Promise<{id: number, idGoout: string | null, idKudyznudy: string | null}[]> => {
-    return await db.select({
+    return db.select({
         id: category.id,
         idGoout: category.idGoout,
         idKudyznudy: category.idKudyznudy

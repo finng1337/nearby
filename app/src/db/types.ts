@@ -17,4 +17,14 @@ export type GetVenuesResponse = {
     title: string;
     lat: string;
     lon: string;
+    schedules: {
+        id: number;
+        event: {
+            id: number;
+            category: number | null;
+        }
+    }[];
 }[];
+export type GetVenuesFilters = {
+    active?: boolean;
+}

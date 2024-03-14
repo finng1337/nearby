@@ -13,7 +13,11 @@ export async function POST(request: Request) {
         return Response.json({ message: "Missing required values" }, { status: 400 });
     }
 
-    const insertedData = await addSchedule(body as InsertSchedule);
+    const insertedData = await addSchedule({
+        ...body,
+        startAt: new Date(body.startAt),
+        endAt: new Date(body.endAt),
+    } as InsertSchedule);
 
     return Response.json(insertedData, { status: 201 });
 }

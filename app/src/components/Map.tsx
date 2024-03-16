@@ -2,9 +2,10 @@
 
 import {GetVenuesResponse} from "@/db/types";
 import {APIProvider, Map as GoogleMap, useMap} from "@vis.gl/react-google-maps";
-import Marker from "@/components/Marker";
+import Marker from "@/components/markers/Marker";
 import Supercluster from "supercluster";
 import React, {useEffect, useRef, useState} from "react";
+import ClusterMarker from "@/components/markers/ClusterMarker";
 
 interface P {
     venue: GetVenuesResponse[0];
@@ -19,16 +20,17 @@ interface Props {
 function Map(props: Props) {
     const {venues} = props;
     const map = useMap();
+    const index = useRef<Supercluster<P, C> | null>(null);
     const [loading, setLoading] = useState(true);
     const [clusters, setClusters] = useState<(Supercluster.PointFeature<P> | Supercluster.ClusterFeature<C>)[]>([]);
     const [bounds, setBounds] = useState<google.maps.LatLngBoundsLiteral | null>(null);
     const [isIdle, setIsIdle] = useState(true);
-    const index = useRef<Supercluster<P, C> | null>(null);
 
     useEffect(() => {
         if (!index.current) {
             index.current = new Supercluster<P, C>({
-                radius: 80,
+                radius: 160,
+                maxZoom: 20,
                 map: (props) => ({venues: [props.venue]}),
                 reduce: (accumulated, props) => {
                     accumulated.venues = [...accumulated.venues, ...props.venues];
@@ -74,11 +76,22 @@ function Map(props: Props) {
         }
     }, [loading, isIdle, bounds]);
 
+    const handleClusterClick = (id: number, ev: google.maps.MapMouseEvent) => {
+        ev.stop();
+
+        if (index.current && map && ev.latLng) {
+            const zoom = index.current.getClusterExpansionZoom(id);
+            map.setZoom(zoom);
+            map.panTo(ev.latLng);
+        }
+    }
+
     return (
         <GoogleMap
             mapId={process.env.NEXT_PUBLIC_GOOGLE_MAP_ID!}
             defaultCenter={{lat: 49.803, lng: 15.474}}
             defaultZoom={8}
+            maxZoom={19}
             minZoom={7}
             streetViewControl={false}
             mapTypeControl={false}
@@ -99,18 +112,24 @@ function Map(props: Props) {
                 };
 
                 if (properties.hasOwnProperty("cluster")) {
+                    const clusterProperties = properties as Supercluster.ClusterFeature<C>["properties"];
+
                     return (
-                        <Marker
+                        <ClusterMarker
                             key={i}
                             position={position}
-                            isClustered
+                            venues={clusterProperties.venues}
+                            onClick={handleClusterClick.bind(null, clusterProperties.cluster_id)}
                         />
                     );
                 } else {
+                    const pointProperties = properties as Supercluster.PointFeature<P>["properties"];
+
                     return (
                         <Marker
                             key={i}
                             position={position}
+                            venue={pointProperties.venue}
                         />
                     );
                 }

@@ -13,7 +13,6 @@ export const getVenues = async (filters: GetVenuesFilters): Promise<GetVenuesRes
     const data = await db.query.venue.findMany({
         columns: {
             id: true,
-            title: true,
             lat: true,
             lon: true,
         },

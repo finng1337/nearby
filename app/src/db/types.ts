@@ -14,7 +14,6 @@ export type EventTag = typeof eventTag.$inferSelect;
 export type InsertEventTag = typeof eventTag.$inferInsert;
 export type GetVenuesResponse = {
     id: number;
-    title: string;
     lat: string;
     lon: string;
     schedules: {

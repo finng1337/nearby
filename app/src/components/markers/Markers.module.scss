@@ -1,15 +1,71 @@
 @import "../../styles/functions";
 @import "../../styles/typography";
+@import "../../styles/variables";
 
+.marker,
 .cluster {
   @include text-large;
 
+  position: relative;
+  transform: translate(0, 50%);
   width: pxToRem(48);
   height: pxToRem(48);
   border-radius: 99999px;
   border: pxToRem(1) solid black;
-  background-color: white;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.cluster {
+  background-color: white;
+}
+
+.marker {
+  color: white;
+}
+
+.exhibitionMarker {
+  background-color: $categoryExhibition;
+}
+
+.filmMarker {
+  background-color: $categoryFilm;
+}
+
+.concertMarker {
+  background-color: $categoryConcert;
+}
+
+.forChildrenMarker {
+  background-color: $categoryForChildren;
+}
+
+.sportMarker {
+  background-color: $categorySport;
+}
+
+.playMarker {
+  background-color: $categoryPlay;
+}
+
+.clubbingMarker {
+  background-color: $categoryClubbing;
+}
+
+.festivalMarker {
+  background-color: $categoryFestival;
+}
+
+.inCityMarker {
+  background-color: $categoryInCity;
+}
+
+.charityMarker {
+  background-color: $categoryCharity;
+}
+
+.gastronomyMarker {
+  background-color: $categoryGastronomy;
+  color: black;
 }

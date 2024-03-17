@@ -1,6 +1,6 @@
 "use client";
 
-import {GetVenuesResponse} from "@/db/types";
+import {CategoryTypeEnum, GetVenuesResponse} from "@/db/types";
 import {APIProvider, Map as GoogleMap, useMap} from "@vis.gl/react-google-maps";
 import Marker from "@/components/markers/Marker";
 import Supercluster from "supercluster";
@@ -86,6 +86,12 @@ function Map(props: Props) {
         }
     }
 
+    const getSchedulesCount = (venues: GetVenuesResponse): number => {
+        return venues.reduce((acc, venue) => {
+            return acc + venue.schedules.length;
+        }, 0);
+    }
+
     return (
         <GoogleMap
             mapId={process.env.NEXT_PUBLIC_GOOGLE_MAP_ID!}
@@ -104,7 +110,7 @@ function Map(props: Props) {
             }}
             onIdle={() => setIsIdle(true)}
         >
-            {clusters.map((cluster, i) => {
+            {clusters.map((cluster) => {
                 const {geometry, properties} = cluster;
                 const position = {
                     lat: geometry.coordinates[1],
@@ -116,20 +122,26 @@ function Map(props: Props) {
 
                     return (
                         <ClusterMarker
-                            key={i}
+                            key={`0${clusterProperties.cluster_id}`}
                             position={position}
-                            venues={clusterProperties.venues}
+                            count={getSchedulesCount(clusterProperties.venues)}
                             onClick={handleClusterClick.bind(null, clusterProperties.cluster_id)}
                         />
                     );
                 } else {
                     const pointProperties = properties as Supercluster.PointFeature<P>["properties"];
 
-                    return (
-                        <Marker
-                            key={i}
+                    return pointProperties.venue.schedules.length > 1 ? (
+                        <ClusterMarker
+                            key={pointProperties.venue.id}
                             position={position}
-                            venue={pointProperties.venue}
+                            count={pointProperties.venue.schedules.length}
+                        />
+                    ) : (
+                        <Marker
+                            key={pointProperties.venue.id}
+                            position={position}
+                            category={(pointProperties.venue.schedules[0].event.category?.value as CategoryTypeEnum) || null}
                         />
                     );
                 }

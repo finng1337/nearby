@@ -28,8 +28,15 @@ export const getVenues = async (filters: GetVenuesFilters): Promise<GetVenuesRes
                     event: {
                         columns: {
                             id: true,
-                            category: true,
                         },
+                        with: {
+                            category: {
+                                columns: {
+                                    id: true,
+                                    value: true,
+                                },
+                            }
+                        }
                     },
                 },
             },

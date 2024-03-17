@@ -20,10 +20,26 @@ export type GetVenuesResponse = {
         id: number;
         event: {
             id: number;
-            category: number | null;
+            category: {
+                id: number;
+                value: string | null;
+            } | null;
         }
     }[];
 }[];
 export type GetVenuesFilters = {
     active?: boolean;
+}
+export enum CategoryTypeEnum {
+    FESTIVAL = "festival",
+    SPORT = "sport",
+    FILM = "film",
+    GASTRONOMY = "gastronomy",
+    IN_CITY = "in_city",
+    FOR_CHILDREN = "for_children",
+    PLAY = "play",
+    CHARITY = "charity",
+    CLUBBING = "clubbing",
+    CONCERT = "concert",
+    EXHIBITION = "exhibition",
 }

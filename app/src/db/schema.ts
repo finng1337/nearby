@@ -33,6 +33,7 @@ export const category = pgTable("category", {
     id: serial("id").primaryKey(),
     idGoout: text("id_goout").unique(),
     idKudyznudy: text("id_kudyznudy").unique(),
+    value: text("value").unique(),
     title: text("title"),
 });
 export const tag = pgTable("tag", {

@@ -1,27 +1,39 @@
 import {AdvancedMarker, AdvancedMarkerProps} from "@vis.gl/react-google-maps";
-import {GetVenuesResponse} from "@/db/types";
+import {CategoryTypeEnum} from "@/db/types";
 import styles from "@/components/markers/Markers.module.scss";
+import CategoryIcon from "@/components/CategoryIcon";
+import {cx} from "@/utils";
 
 type Props = {
     position: google.maps.LatLngLiteral;
-    venue: GetVenuesResponse[0];
+    category: CategoryTypeEnum | null;
 } & AdvancedMarkerProps;
 export default function Marker(props: Props) {
-    const {position, venue, ...rest} = props;
-
-    const getSchedulesCount = (): string => {
-        return venue.schedules.length > 999 ?
-            `${Math.floor(venue.schedules.length / 100) / 10}k` :
-            venue.schedules.length.toString();
-    }
+    const {position, category, ...rest} = props;
 
     return (
         <AdvancedMarker
-            className={styles.cluster}
+            className={cx({
+                [styles.marker]: true,
+                [styles.exhibitionMarker]: category === CategoryTypeEnum.EXHIBITION,
+                [styles.filmMarker]: category === CategoryTypeEnum.FILM,
+                [styles.concertMarker]: category === CategoryTypeEnum.CONCERT,
+                [styles.forChildrenMarker]: category === CategoryTypeEnum.FOR_CHILDREN,
+                [styles.sportMarker]: category === CategoryTypeEnum.SPORT,
+                [styles.playMarker]: category === CategoryTypeEnum.PLAY,
+                [styles.clubbingMarker]: category === CategoryTypeEnum.CLUBBING,
+                [styles.festivalMarker]: category === CategoryTypeEnum.FESTIVAL,
+                [styles.charityMarker]: category === CategoryTypeEnum.CHARITY,
+                [styles.gastronomyMarker]: category === CategoryTypeEnum.GASTRONOMY,
+                [styles.inCityMarker]: !category || category === CategoryTypeEnum.IN_CITY,
+            })}
             position={position}
             {...rest}
         >
-            <span>{getSchedulesCount()}</span>
+            <CategoryIcon
+                category={category}
+                size={24}
+            />
         </AdvancedMarker>
     )
 }

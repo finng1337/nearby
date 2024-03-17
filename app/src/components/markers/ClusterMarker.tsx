@@ -1,23 +1,12 @@
 import {AdvancedMarker, AdvancedMarkerProps} from "@vis.gl/react-google-maps";
-import {GetVenuesResponse} from "@/db/types";
 import styles from "@/components/markers/Markers.module.scss";
 
 type Props = {
     position: google.maps.LatLngLiteral;
-    venues: GetVenuesResponse;
+    count: number;
 } & AdvancedMarkerProps;
 export default function ClusterMarker(props: Props) {
-    const {position, ...rest} = props;
-
-    const getSchedulesCount = (): string => {
-        const {venues} = props;
-
-        const count = venues.reduce((acc, venue) => {
-            return acc + venue.schedules.length;
-        }, 0);
-
-        return count > 999 ? `${Math.floor(count / 100) / 10}k` : count.toString();
-    }
+    const {position, count, ...rest} = props;
 
     return (
         <AdvancedMarker
@@ -26,7 +15,7 @@ export default function ClusterMarker(props: Props) {
             {...rest}
         >
             <span>
-                {getSchedulesCount()}
+                {count > 999 ? `${Math.floor(count / 100) / 10}k` : count.toString()}
             </span>
         </AdvancedMarker>
     )

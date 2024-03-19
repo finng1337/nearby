@@ -1,3 +1,5 @@
+"use server";
+
 import db from "@/db/drizzle";
 import {schedule} from "@/db/schema";
 import {Schedule, InsertSchedule} from "@/db/types";

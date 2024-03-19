@@ -6,6 +6,7 @@ import Marker from "@/components/markers/Marker";
 import Supercluster from "supercluster";
 import React, {useEffect, useRef, useState} from "react";
 import ClusterMarker from "@/components/markers/ClusterMarker";
+import {getVenues} from "@/db/actions/venueActions";
 
 interface P {
     venue: GetVenuesResponse[0];
@@ -13,68 +14,58 @@ interface P {
 interface C {
     venues: GetVenuesResponse;
 }
-
-interface Props {
-    venues: GetVenuesResponse;
-}
-function Map(props: Props) {
-    const {venues} = props;
+function Map() {
     const map = useMap();
     const index = useRef<Supercluster<P, C> | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [venues, setVenues] = useState<GetVenuesResponse>([]);
     const [clusters, setClusters] = useState<(Supercluster.PointFeature<P> | Supercluster.ClusterFeature<C>)[]>([]);
-    const [bounds, setBounds] = useState<google.maps.LatLngBoundsLiteral | null>(null);
-    const [isIdle, setIsIdle] = useState(true);
+    const [boundsChanged, setBoundsChanged] = useState<boolean>(false);
 
     useEffect(() => {
-        if (!index.current) {
-            index.current = new Supercluster<P, C>({
-                radius: 160,
-                maxZoom: 20,
-                map: (props) => ({venues: [props.venue]}),
-                reduce: (accumulated, props) => {
-                    accumulated.venues = [...accumulated.venues, ...props.venues];
-                }
-            });
-
-            index.current.load(venues.map(venue => ({
-                type: "Feature",
-                geometry: {
-                    type: "Point",
-                    coordinates: [parseFloat(venue.lon), parseFloat(venue.lat)]
-                },
-                properties: {venue}
-            } as Supercluster.PointFeature<P>)));
-            setLoading(false);
-        }
+        const data = getVenues({active: true});
+        data.then(res => setVenues(res));
     }, []);
 
     useEffect(() => {
-        const mapBounds = map?.getBounds();
-
-        if (mapBounds) {
-            setBounds({
-                west: mapBounds.getSouthWest().lng(),
-                south: mapBounds.getSouthWest().lat(),
-                east: mapBounds.getNorthEast().lng(),
-                north: mapBounds.getNorthEast().lat()
-            });
+        if (venues.length > 0) {
+            loadIndex();
+            updateClusters();
         }
-    }, [map]);
+    }, [venues]);
 
-    useEffect(() => {
-        if (!!index.current && !loading && isIdle && bounds) {
+    const loadIndex = () => {
+        index.current = new Supercluster<P, C>({
+            radius: 160,
+            maxZoom: 20,
+            map: (props) => ({venues: [props.venue]}),
+            reduce: (accumulated, props) => {
+                accumulated.venues = [...accumulated.venues, ...props.venues];
+            }
+        });
+        index.current.load(venues.map(venue => ({
+            type: "Feature",
+            geometry: {
+                type: "Point",
+                coordinates: [parseFloat(venue.lon), parseFloat(venue.lat)]
+            },
+            properties: {venue}
+        } as Supercluster.PointFeature<P>)));
+    };
+
+    const updateClusters = () => {
+        if (index.current && venues.length > 0) {
             const mapZoom = map?.getZoom();
+            const mapBounds = map?.getBounds()?.toJSON();
 
-            if (mapZoom !== undefined) {
+            if (mapZoom && mapBounds) {
                 console.log("updating clusters");
                 setClusters(index.current.getClusters(
-                    [bounds.west, bounds.south, bounds.east, bounds.north],
+                    [mapBounds.west, mapBounds.south, mapBounds.east, mapBounds.north],
                     mapZoom
                 ));
             }
         }
-    }, [loading, isIdle, bounds]);
+    };
 
     const handleClusterClick = (id: number, ev: google.maps.MapMouseEvent) => {
         ev.stop();
@@ -83,6 +74,13 @@ function Map(props: Props) {
             const zoom = index.current.getClusterExpansionZoom(id);
             map.setZoom(zoom);
             map.panTo(ev.latLng);
+        }
+    }
+
+    const handleIdle = () => {
+        if (boundsChanged) {
+            updateClusters();
+            setBoundsChanged(false);
         }
     }
 
@@ -104,11 +102,8 @@ function Map(props: Props) {
             fullscreenControl={false}
             clickableIcons={false}
             gestureHandling="greedy"
-            onBoundsChanged={ev => {
-                setBounds(ev.detail.bounds);
-                setIsIdle(false);
-            }}
-            onIdle={() => setIsIdle(true)}
+            onBoundsChanged={() => setBoundsChanged(true)}
+            onIdle={handleIdle}
         >
             {clusters.map((cluster) => {
                 const {geometry, properties} = cluster;
@@ -150,14 +145,14 @@ function Map(props: Props) {
     );
 }
 
-export default function MapWrapper(props: Props) {
+export default function MapWrapper() {
     return (
         <APIProvider
             apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
             region="CZ"
             language="cs"
         >
-            <Map venues={props.venues} />
+            <Map />
         </APIProvider>
     );
 }

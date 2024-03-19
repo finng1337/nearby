@@ -1,7 +1,7 @@
 import {addCategory, getCategoryIds} from "@/db/actions/categoryActions";
 import {InsertCategory} from "@/db/types";
 
-export async function GET(request: Request) {
+export async function GET() {
     const data = await getCategoryIds();
 
     return Response.json(data, {status: 200});

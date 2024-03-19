@@ -1,3 +1,5 @@
+"use server";
+
 import db from "@/db/drizzle";
 import {category} from "@/db/schema";
 import {Category, InsertCategory} from "@/db/types";

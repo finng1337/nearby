@@ -1,3 +1,5 @@
+"use server";
+
 import {GetVenuesFilters, GetVenuesResponse, InsertVenue, Venue} from "@/db/types";
 import db from "@/db/drizzle";
 import {venue} from "@/db/schema";

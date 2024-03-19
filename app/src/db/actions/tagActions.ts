@@ -1,3 +1,5 @@
+"use server";
+
 import db from "@/db/drizzle";
 import {tag} from "@/db/schema";
 import {Tag, InsertTag} from "@/db/types";

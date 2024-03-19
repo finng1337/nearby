@@ -1,7 +1,7 @@
 import {addSchedule, getScheduleIds} from "@/db/actions/scheduleActions";
 import {InsertSchedule} from "@/db/types";
 
-export async function GET(request: Request) {
+export async function GET() {
     const data = await getScheduleIds();
 
     return Response.json(data, {status: 200});

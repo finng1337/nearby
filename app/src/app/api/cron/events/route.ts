@@ -1,7 +1,7 @@
 import {addEvent, getEventsIds} from "@/db/actions/eventActions";
 import {InsertEvent} from "@/db/types";
 
-export async function GET(request: Request) {
+export async function GET() {
     const data = await getEventsIds();
 
     return Response.json(data, {status: 200});

@@ -45,7 +45,7 @@ export const tag = pgTable("tag", {
 export const eventTag = pgTable("event_tag", {
     id: serial("id").primaryKey(),
     event: integer("id_event").references(() => event.id).notNull(),
-    tags: integer("id_tags").references(() => tag.id).notNull(),
+    tag: integer("id_tags").references(() => tag.id).notNull(),
 });
 export const venueRelations = relations(venue, ({many}) => ({
     schedules: many(schedule),
@@ -79,8 +79,8 @@ export const eventTagsRelations = relations(eventTag, ({one}) => ({
         fields: [eventTag.event],
         references: [event.id],
     }),
-    tags: one(tag, {
-        fields: [eventTag.tags],
+    tag: one(tag, {
+        fields: [eventTag.tag],
         references: [tag.id],
     }),
 }));

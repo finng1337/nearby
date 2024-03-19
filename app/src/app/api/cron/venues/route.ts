@@ -1,6 +1,6 @@
 import {InsertVenue} from "@/db/types";
 import {addVenue, getVenuesIds} from "@/db/actions/venueActions";
-export async function GET(request: Request) {
+export async function GET() {
     const data = await getVenuesIds();
 
     return Response.json(data, {status: 200});

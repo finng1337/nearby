@@ -5,12 +5,16 @@ import {schedule} from "@/db/schema";
 import {Schedule, InsertSchedule, GetScheduleResponse} from "@/db/types";
 import {eq} from "drizzle-orm";
 
-export const getScheduleIds = async (): Promise<{id: number, idGoout: number | null, idKudyznudy: string | null}[]> => {
-    return db.select({
-        id: schedule.id,
-        idGoout: schedule.idGoout,
-        idKudyznudy: schedule.idKudyznudy
-    }).from(schedule);
+export const getScheduleIds = async (): Promise<
+    {id: number; idGoout: number | null; idKudyznudy: string | null}[]
+> => {
+    return db
+        .select({
+            id: schedule.id,
+            idGoout: schedule.idGoout,
+            idKudyznudy: schedule.idKudyznudy,
+        })
+        .from(schedule);
 };
 export const getSchedule = async (id: number): Promise<GetScheduleResponse> => {
     return db.query.schedule.findFirst({
@@ -20,7 +24,7 @@ export const getSchedule = async (id: number): Promise<GetScheduleResponse> => {
             urlGoout: true,
             urlKudyznudy: true,
             startAt: true,
-            endAt: true
+            endAt: true,
         },
         with: {
             event: {
@@ -35,8 +39,8 @@ export const getSchedule = async (id: number): Promise<GetScheduleResponse> => {
                         columns: {
                             id: true,
                             value: true,
-                            title: true
-                        }
+                            title: true,
+                        },
                     },
                     tags: {
                         columns: {
@@ -46,11 +50,11 @@ export const getSchedule = async (id: number): Promise<GetScheduleResponse> => {
                             tag: {
                                 columns: {
                                     id: true,
-                                    title: true
-                                }
-                            }
-                        }
-                    }
+                                    title: true,
+                                },
+                            },
+                        },
+                    },
                 },
             },
             venue: {
@@ -62,8 +66,13 @@ export const getSchedule = async (id: number): Promise<GetScheduleResponse> => {
         },
     });
 };
-export const addSchedule = async (insertSchedule: InsertSchedule): Promise<Schedule> => {
-    const insertedData = await db.insert(schedule).values(insertSchedule).returning();
+export const addSchedule = async (
+    insertSchedule: InsertSchedule
+): Promise<Schedule> => {
+    const insertedData = await db
+        .insert(schedule)
+        .values(insertSchedule)
+        .returning();
 
     return insertedData[0];
 };

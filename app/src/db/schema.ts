@@ -1,4 +1,11 @@
-import {integer, json, pgTable, serial, text, timestamp} from "drizzle-orm/pg-core";
+import {
+    integer,
+    json,
+    pgTable,
+    serial,
+    text,
+    timestamp,
+} from "drizzle-orm/pg-core";
 import {relations} from "drizzle-orm";
 
 export const venue = pgTable("venue", {
@@ -22,8 +29,12 @@ export const schedule = pgTable("schedule", {
     id: serial("id").primaryKey(),
     idGoout: integer("id_goout").unique(),
     idKudyznudy: text("id_kudyznudy").unique(),
-    venue: integer("id_venue").references(() => venue.id).notNull(),
-    event: integer("id_event").references(() => event.id).notNull(),
+    venue: integer("id_venue")
+        .references(() => venue.id)
+        .notNull(),
+    event: integer("id_event")
+        .references(() => event.id)
+        .notNull(),
     urlGoout: text("url_goout"),
     urlKudyznudy: text("url_kudyznudy"),
     startAt: timestamp("start_at").notNull(),
@@ -44,8 +55,12 @@ export const tag = pgTable("tag", {
 });
 export const eventTag = pgTable("event_tag", {
     id: serial("id").primaryKey(),
-    event: integer("id_event").references(() => event.id).notNull(),
-    tag: integer("id_tags").references(() => tag.id).notNull(),
+    event: integer("id_event")
+        .references(() => event.id)
+        .notNull(),
+    tag: integer("id_tags")
+        .references(() => tag.id)
+        .notNull(),
 });
 export const venueRelations = relations(venue, ({many}) => ({
     schedules: many(schedule),

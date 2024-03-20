@@ -13,9 +13,9 @@ const nextConfig = {
             {
                 protocol: "https",
                 hostname: "goout.net",
-            }
-        ]
-    }
+            },
+        ],
+    },
 };
 
 export default nextConfig;

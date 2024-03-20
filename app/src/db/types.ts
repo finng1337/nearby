@@ -24,41 +24,43 @@ export type GetVenuesResponse = {
                 id: number;
                 value: string | null;
             } | null;
-        }
+        };
     }[];
 }[];
 export type GetVenuesFilters = {
     active?: boolean;
-}
-export type GetScheduleResponse = {
-    id: number;
-    urlGoout: string | null;
-    urlKudyznudy: string | null;
-    startAt: Date;
-    endAt: Date;
-    event: {
-        id: number;
-        title: string;
-        description: string | null;
-        images: any;
-        category: {
-            id: number;
-            value: string | null;
-            title: string | null;
-        } | null;
-        tags: {
-            id: number;
-            tag: {
-                id: number;
-                title: string | null;
-            };
-        }[];
-    };
-    venue: {
-        id: number;
-        title: string;
-    };
-} | undefined;
+};
+export type GetScheduleResponse =
+    | {
+          id: number;
+          urlGoout: string | null;
+          urlKudyznudy: string | null;
+          startAt: Date;
+          endAt: Date;
+          event: {
+              id: number;
+              title: string;
+              description: string | null;
+              images: any;
+              category: {
+                  id: number;
+                  value: string | null;
+                  title: string | null;
+              } | null;
+              tags: {
+                  id: number;
+                  tag: {
+                      id: number;
+                      title: string | null;
+                  };
+              }[];
+          };
+          venue: {
+              id: number;
+              title: string;
+          };
+      }
+    | undefined;
 export enum CategoryTypeEnum {
     FESTIVAL = "festival",
     SPORT = "sport",

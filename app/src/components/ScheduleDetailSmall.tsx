@@ -14,7 +14,7 @@ function ScheduleDetailSmall(props: Props) {
 
     useEffect(() => {
         const data = getSchedule(scheduleId);
-        data.then(res => setSchedule(res));
+        data.then((res) => setSchedule(res));
     }, []);
 
     const formatDate = (date: Date) => {
@@ -22,17 +22,25 @@ function ScheduleDetailSmall(props: Props) {
             return null;
         }
 
-        const day = Intl.DateTimeFormat("cs-CZ", {weekday: "short"}).format(date);
-        const dayMonth = Intl.DateTimeFormat("cs-CZ", {day: "numeric", month: "numeric"}).format(date);
-        const time = Intl.DateTimeFormat("cs-CZ", {hour: "numeric", minute: "numeric"}).format(date);
+        const day = Intl.DateTimeFormat("cs-CZ", {weekday: "short"}).format(
+            date
+        );
+        const dayMonth = Intl.DateTimeFormat("cs-CZ", {
+            day: "numeric",
+            month: "numeric",
+        }).format(date);
+        const time = Intl.DateTimeFormat("cs-CZ", {
+            hour: "numeric",
+            minute: "numeric",
+        }).format(date);
 
         return `${day} ${dayMonth} v ${time}`;
-    }
+    };
 
     const htmlToText = (html: string) => {
         const doc = new DOMParser().parseFromString(html, "text/html");
         return doc.body.textContent || "";
-    }
+    };
 
     if (!schedule) {
         return null;
@@ -46,17 +54,27 @@ function ScheduleDetailSmall(props: Props) {
         <div className={styles.container}>
             <div className={styles.icon}>
                 <CategoryIcon
-                    category={(event.category?.value as CategoryTypeEnum) || null}
+                    category={
+                        (event.category?.value as CategoryTypeEnum) || null
+                    }
                     colored
                     size={24}
                 />
             </div>
             <div className="flex items-center justify-center">
-                <Image src={eventImg} alt={event.title} width={180} height={120} className={styles.eventImg} />
+                <Image
+                    src={eventImg}
+                    alt={event.title}
+                    width={180}
+                    height={120}
+                    className={styles.eventImg}
+                />
             </div>
             <div className={styles.mainContent}>
                 <div className={styles.eventMeta}>
-                    <span className={styles.date}>{formatDate(schedule.startAt)}</span>
+                    <span className={styles.date}>
+                        {formatDate(schedule.startAt)}
+                    </span>
                     <h2 className={styles.title}>{event.title}</h2>
                     <span className={styles.venue}>{venue.title}</span>
                 </div>
@@ -72,6 +90,6 @@ function ScheduleDetailSmall(props: Props) {
                 </div>
             </div>
         </div>
-    )
+    );
 }
 export default memo(ScheduleDetailSmall);

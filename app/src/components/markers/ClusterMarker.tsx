@@ -15,8 +15,10 @@ export default function ClusterMarker(props: Props) {
             {...rest}
         >
             <span>
-                {count > 999 ? `${Math.floor(count / 100) / 10}k` : count.toString()}
+                {count > 999
+                    ? `${Math.floor(count / 100) / 10}k`
+                    : count.toString()}
             </span>
         </AdvancedMarker>
-    )
+    );
 }

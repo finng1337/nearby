@@ -11,5 +11,5 @@ export async function POST(request: Request) {
 
     const insertedData = await addCategory(body as InsertCategory);
 
-    return Response.json(insertedData, { status: 201 });
+    return Response.json(insertedData, {status: 201});
 }

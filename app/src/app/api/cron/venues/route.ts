@@ -9,10 +9,13 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     if (!body.title || !body.lat || !body.lon) {
-        return Response.json({ message: "Missing required values" }, { status: 400 });
+        return Response.json(
+            {message: "Missing required values"},
+            {status: 400}
+        );
     }
 
     const insertedData = await addVenue(body as InsertVenue);
 
-    return Response.json(insertedData, { status: 201 });
+    return Response.json(insertedData, {status: 201});
 }

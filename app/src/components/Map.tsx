@@ -20,6 +20,7 @@ function Map() {
     const [venues, setVenues] = useState<GetVenuesResponse>([]);
     const [clusters, setClusters] = useState<(Supercluster.PointFeature<P> | Supercluster.ClusterFeature<C>)[]>([]);
     const [boundsChanged, setBoundsChanged] = useState<boolean>(false);
+    const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(null);
 
     useEffect(() => {
         const data = getVenues({active: true});
@@ -32,6 +33,8 @@ function Map() {
             updateClusters();
         }
     }, [venues]);
+
+    const makeClusterKey = (clusterId: number) => `0${clusterId}`;
 
     const loadIndex = () => {
         index.current = new Supercluster<P, C>({
@@ -67,14 +70,33 @@ function Map() {
         }
     };
 
-    const handleClusterClick = (id: number, ev: google.maps.MapMouseEvent) => {
+    const handleClusterClick = (clusterProperties: Supercluster.ClusterFeature<C>["properties"], ev: google.maps.MapMouseEvent) => {
         ev.stop();
 
-        if (index.current && map && ev.latLng) {
-            const zoom = index.current.getClusterExpansionZoom(id);
-            map.setZoom(zoom);
-            map.panTo(ev.latLng);
+        ev.latLng && map?.panTo(ev.latLng);
+
+        const {venues, cluster_id} = clusterProperties;
+        const venueLat = venues[0].lat;
+        const venueLon = venues[0].lon;
+        const isSame = !venues.find(venue => venue.lat !== venueLat && venue.lon !== venueLon);
+
+        if (index.current && !isSame) {
+            const zoom = index.current.getClusterExpansionZoom(cluster_id);
+
+            if (zoom <= 19) {
+                map?.setZoom(zoom);
+                return;
+            }
         }
+
+        setSelectedMarkerId(makeClusterKey(cluster_id));
+    };
+
+    const handleMarkerClick = (markerId: string, ev: google.maps.MapMouseEvent) => {
+        ev.stop();
+
+        ev.latLng && map?.panTo(ev.latLng);
+        setSelectedMarkerId(markerId);
     }
 
     const handleIdle = () => {
@@ -117,26 +139,32 @@ function Map() {
 
                     return (
                         <ClusterMarker
-                            key={`0${clusterProperties.cluster_id}`}
+                            key={makeClusterKey(clusterProperties.cluster_id)}
                             position={position}
                             count={getSchedulesCount(clusterProperties.venues)}
                             onClick={handleClusterClick.bind(null, clusterProperties.cluster_id)}
+                            onClick={handleClusterClick.bind(null, clusterProperties)}
                         />
                     );
                 } else {
                     const pointProperties = properties as Supercluster.PointFeature<P>["properties"];
+                    const schedule = pointProperties.venue.schedules[0];
 
                     return pointProperties.venue.schedules.length > 1 ? (
                         <ClusterMarker
                             key={pointProperties.venue.id}
                             position={position}
                             count={pointProperties.venue.schedules.length}
+                            onClick={handleMarkerClick.bind(null, pointProperties.venue.id.toString())}
                         />
                     ) : (
                         <Marker
                             key={pointProperties.venue.id}
                             position={position}
-                            category={(pointProperties.venue.schedules[0].event.category?.value as CategoryTypeEnum) || null}
+                            category={(schedule.event.category?.value as CategoryTypeEnum) || null}
+                            scheduleId={schedule.id}
+                            onClick={handleMarkerClick.bind(null, pointProperties.venue.id.toString())}
+                            selected={selectedMarkerId === pointProperties.venue.id.toString()}
                         />
                     );
                 }

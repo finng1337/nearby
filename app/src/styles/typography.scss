@@ -1,5 +1,10 @@
 @import "./functions";
 
+@mixin text-small {
+  font-size: pxToRem(12);
+  line-height: pxToRem(16);
+}
+
 @mixin text-body {
   font-size: pxToRem(14);
   line-height: pxToRem(20);
@@ -8,4 +13,23 @@
 @mixin text-large {
   font-size: pxToRem(18);
   line-height: pxToRem(24);
+}
+
+@mixin title-small {
+  font-size: pxToRem(16);
+  line-height: pxToRem(20);
+  font-weight: bold;
+}
+
+@mixin ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@mixin multiline-ellipsis($lineCount) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lineCount;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

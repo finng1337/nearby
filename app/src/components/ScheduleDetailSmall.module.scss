@@ -1,0 +1,90 @@
+@import "../styles/functions";
+@import "../styles/typography";
+@import "../styles/variables";
+
+.container {
+  @include text-body;
+
+  height: pxToRem(200);
+  width: pxToRem(440);
+  font-weight: normal;
+  background-color: white;
+  color: black;
+  border-radius: pxToRem(8);
+  padding: pxToRem(8);
+  display: flex;
+  flex-direction: row;
+  gap: pxToRem(12);
+  box-shadow: 0 0 pxToRem(8) pxToRem(4) rgba(0, 0, 0, 0.2);
+}
+
+.mainContent {
+  width: pxToRem(232);
+  display: flex;
+  flex-direction: column;
+  padding-top: pxToRem(8);
+}
+
+.eventImg {
+  object-fit: contain;
+  border-radius: pxToRem(4);
+  box-shadow: 0 0 pxToRem(4) pxToRem(2) rgba(0, 0, 0, 0.15);
+}
+
+.eventMeta {
+  display: flex;
+  flex-direction: column;
+  gap: pxToRem(4);
+}
+
+.date {
+  @include text-small;
+
+  color: $danger;
+
+  &::first-letter {
+    text-transform: uppercase;
+  }
+}
+
+.title {
+  @include title-small;
+  @include ellipsis;
+}
+
+.venue {
+  @include text-small;
+  @include ellipsis;
+
+  color: $shade800;
+}
+
+.description {
+  @include multiline-ellipsis(3);
+
+  margin-top: pxToRem(10);
+}
+
+.icon {
+  position: absolute;
+  top: pxToRem(10);
+  right: pxToRem(12);
+}
+
+.btnsContainer {
+  height: pxToRem(28);
+  display: flex;
+  flex-direction: row;
+  gap: pxToRem(12);
+  margin-top: auto;
+}
+
+.toggleDetail {
+  @include text-small;
+
+  width: 100%;
+  color: black;
+  font-weight: bold;
+  background-color: $shade200;
+  border-radius: pxToRem(4);
+}

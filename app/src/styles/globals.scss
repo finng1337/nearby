@@ -1,4 +1,5 @@
 @import "./typography";
+@import "./functions";
 
 @tailwind base;
 @tailwind components;
@@ -11,4 +12,26 @@ main {
 
 body {
     @include text-body;
+}
+
+//Google Maps InfoWindow styles
+.gm-style-iw {
+    transform: translate(-50%, calc(-100% + 25px)) !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    max-height: unset !important;
+    max-width: unset !important;
+    background-color: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    & > button {
+        display: none !important;
+    }
+}
+.gm-style-iw-tc {
+    display: none;
+}
+.gm-style-iw-d {
+    overflow: visible !important;
+    max-height: initial !important;
 }

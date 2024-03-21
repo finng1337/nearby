@@ -11,13 +11,14 @@ import InCityIcon from "@/icons/in_city.svg";
 import CharityIcon from "@/icons/charity.svg";
 import GastronomyIcon from "@/icons/gastronomy.svg";
 import styles from "@/components/CategoryIcon.module.scss";
+import {memo} from "react";
 
 interface Props {
     category: CategoryTypeEnum | null;
     colored?: boolean;
     size?: number;
 }
-export default function CategoryIcon(props: Props) {
+function CategoryIcon(props: Props) {
     const {category, size, colored} = props;
 
     switch (category) {
@@ -47,3 +48,4 @@ export default function CategoryIcon(props: Props) {
             return <InCityIcon height={size} className={colored ? styles.inCityIcon : ""} />;
     }
 }
+export default memo(CategoryIcon);

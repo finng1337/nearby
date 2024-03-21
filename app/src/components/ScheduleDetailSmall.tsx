@@ -4,9 +4,11 @@ import {getSchedule} from "@/db/actions/scheduleActions";
 import styles from "@/components/ScheduleDetailSmall.module.scss";
 import CategoryIcon from "@/components/CategoryIcon";
 import Image from "next/image";
+import {InfoWindow} from "@vis.gl/react-google-maps";
 
 interface Props {
     scheduleId: number;
+    markerRef: google.maps.marker.AdvancedMarkerElement;
 }
 
 const formatDate = (date: Date) => {
@@ -29,10 +31,11 @@ const htmlToText = (html: string) => {
 };
 
 function ScheduleDetailSmall(props: Props) {
-    const {scheduleId} = props;
+    const {scheduleId, markerRef} = props;
     const [schedule, setSchedule] = useState<GetScheduleResponse>(undefined);
 
     useEffect(() => {
+        setSchedule(undefined);
         const data = getSchedule(scheduleId);
         data.then((res) => setSchedule(res));
     }, [scheduleId]);
@@ -46,45 +49,27 @@ function ScheduleDetailSmall(props: Props) {
     const eventImg = (event.images as string[])[0];
 
     return (
-        <div className={styles.container}>
-            <div className={styles.icon}>
-                <CategoryIcon
-                    category={
-                        (event.category?.value as CategoryTypeEnum) || null
-                    }
-                    colored
-                    size={24}
-                />
-            </div>
-            <div className="flex items-center justify-center">
-                <Image
-                    src={eventImg}
-                    alt={event.title}
-                    width={180}
-                    height={120}
-                    className={styles.eventImg}
-                />
-            </div>
-            <div className={styles.mainContent}>
-                <div className={styles.eventMeta}>
-                    <span className={styles.date}>
-                        {formatDate(schedule.startAt)}
-                    </span>
-                    <h2 className={styles.title}>{event.title}</h2>
-                    <span className={styles.venue}>{venue.title}</span>
+        <InfoWindow anchor={markerRef}>
+            <div className={styles.container}>
+                <div className={styles.icon}>
+                    <CategoryIcon category={(event.category?.value as CategoryTypeEnum) || null} colored size={24} />
                 </div>
-                {event.description && (
-                    <p className={styles.description}>
-                        {htmlToText(event.description)}
-                    </p>
-                )}
-                <div className={styles.btnsContainer}>
-                    <button className={styles.toggleDetail}>
-                        Zobrazit více
-                    </button>
+                <div className="flex items-center justify-center">
+                    <Image src={eventImg} alt={event.title} width={180} height={120} className={styles.eventImg} />
+                </div>
+                <div className={styles.mainContent}>
+                    <div className={styles.eventMeta}>
+                        <span className={styles.date}>{formatDate(schedule.startAt)}</span>
+                        <h2 className={styles.title}>{event.title}</h2>
+                        <span className={styles.venue}>{venue.title}</span>
+                    </div>
+                    {event.description && <p className={styles.description}>{htmlToText(event.description)}</p>}
+                    <div className={styles.btnsContainer}>
+                        <button className={styles.toggleDetail}>Zobrazit více</button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </InfoWindow>
     );
 }
 export default memo(ScheduleDetailSmall);

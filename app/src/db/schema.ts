@@ -1,11 +1,4 @@
-import {
-    integer,
-    json,
-    pgTable,
-    serial,
-    text,
-    timestamp,
-} from "drizzle-orm/pg-core";
+import {integer, json, pgTable, serial, text, timestamp} from "drizzle-orm/pg-core";
 import {relations} from "drizzle-orm";
 
 export const venue = pgTable("venue", {

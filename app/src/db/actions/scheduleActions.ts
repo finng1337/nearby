@@ -5,9 +5,7 @@ import {schedule} from "@/db/schema";
 import {Schedule, InsertSchedule, GetScheduleResponse} from "@/db/types";
 import {eq} from "drizzle-orm";
 
-export const getScheduleIds = async (): Promise<
-    {id: number; idGoout: number | null; idKudyznudy: string | null}[]
-> => {
+export const getScheduleIds = async (): Promise<{id: number; idGoout: number | null; idKudyznudy: string | null}[]> => {
     return db
         .select({
             id: schedule.id,
@@ -66,13 +64,8 @@ export const getSchedule = async (id: number): Promise<GetScheduleResponse> => {
         },
     });
 };
-export const addSchedule = async (
-    insertSchedule: InsertSchedule
-): Promise<Schedule> => {
-    const insertedData = await db
-        .insert(schedule)
-        .values(insertSchedule)
-        .returning();
+export const addSchedule = async (insertSchedule: InsertSchedule): Promise<Schedule> => {
+    const insertedData = await db.insert(schedule).values(insertSchedule).returning();
 
     return insertedData[0];
 };

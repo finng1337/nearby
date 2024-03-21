@@ -22,88 +22,28 @@ export default function CategoryIcon(props: Props) {
 
     switch (category) {
         case CategoryTypeEnum.EXHIBITION:
-            return (
-                <ExhibitionIcon
-                    height={size}
-                    className={colored ? styles.exhibitionIcon : ""}
-                />
-            );
+            return <ExhibitionIcon height={size} className={colored ? styles.exhibitionIcon : ""} />;
         case CategoryTypeEnum.FILM:
-            return (
-                <FilmIcon
-                    height={size}
-                    className={colored ? styles.filmIcon : ""}
-                />
-            );
+            return <FilmIcon height={size} className={colored ? styles.filmIcon : ""} />;
         case CategoryTypeEnum.CONCERT:
-            return (
-                <ConcertIcon
-                    height={size}
-                    className={colored ? styles.concertIcon : ""}
-                />
-            );
+            return <ConcertIcon height={size} className={colored ? styles.concertIcon : ""} />;
         case CategoryTypeEnum.FOR_CHILDREN:
-            return (
-                <ForChildrenIcon
-                    height={size}
-                    className={colored ? styles.forChildrenIcon : ""}
-                />
-            );
+            return <ForChildrenIcon height={size} className={colored ? styles.forChildrenIcon : ""} />;
         case CategoryTypeEnum.SPORT:
-            return (
-                <SportIcon
-                    height={size}
-                    className={colored ? styles.sportIcon : ""}
-                />
-            );
+            return <SportIcon height={size} className={colored ? styles.sportIcon : ""} />;
         case CategoryTypeEnum.PLAY:
-            return (
-                <PlayIcon
-                    height={size}
-                    className={colored ? styles.playIcon : ""}
-                />
-            );
+            return <PlayIcon height={size} className={colored ? styles.playIcon : ""} />;
         case CategoryTypeEnum.CLUBBING:
-            return (
-                <ClubbingIcon
-                    height={size}
-                    className={colored ? styles.clubbingIcon : ""}
-                />
-            );
+            return <ClubbingIcon height={size} className={colored ? styles.clubbingIcon : ""} />;
         case CategoryTypeEnum.FESTIVAL:
-            return (
-                <FestivalIcon
-                    height={size}
-                    className={colored ? styles.festivalIcon : ""}
-                />
-            );
+            return <FestivalIcon height={size} className={colored ? styles.festivalIcon : ""} />;
         case CategoryTypeEnum.IN_CITY:
-            return (
-                <InCityIcon
-                    height={size}
-                    className={colored ? styles.inCityIcon : ""}
-                />
-            );
+            return <InCityIcon height={size} className={colored ? styles.inCityIcon : ""} />;
         case CategoryTypeEnum.CHARITY:
-            return (
-                <CharityIcon
-                    height={size}
-                    className={colored ? styles.charityIcon : ""}
-                />
-            );
+            return <CharityIcon height={size} className={colored ? styles.charityIcon : ""} />;
         case CategoryTypeEnum.GASTRONOMY:
-            return (
-                <GastronomyIcon
-                    height={size}
-                    className={colored ? styles.gastronomyIcon : ""}
-                />
-            );
+            return <GastronomyIcon height={size} className={colored ? styles.gastronomyIcon : ""} />;
         default:
-            return (
-                <InCityIcon
-                    height={size}
-                    className={colored ? styles.inCityIcon : ""}
-                />
-            );
+            return <InCityIcon height={size} className={colored ? styles.inCityIcon : ""} />;
     }
 }

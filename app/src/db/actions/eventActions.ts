@@ -4,9 +4,7 @@ import db from "@/db/drizzle";
 import {event, eventTag} from "@/db/schema";
 import {InsertEvent, Event, EventTag} from "@/db/types";
 
-export const getEventsIds = async (): Promise<
-    {id: number; idGoout: number | null; idKudyznudy: string | null}[]
-> => {
+export const getEventsIds = async (): Promise<{id: number; idGoout: number | null; idKudyznudy: string | null}[]> => {
     return db
         .select({
             id: event.id,
@@ -20,10 +18,7 @@ export const addEvent = async (insertEvent: InsertEvent): Promise<Event> => {
 
     return insertedData[0];
 };
-export const addTag = async (
-    eventId: number,
-    tagId: number
-): Promise<EventTag> => {
+export const addTag = async (eventId: number, tagId: number): Promise<EventTag> => {
     const insertedData = await db
         .insert(eventTag)
         .values({

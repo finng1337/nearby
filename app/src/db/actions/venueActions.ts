@@ -1,17 +1,10 @@
 "use server";
 
-import {
-    GetVenuesFilters,
-    GetVenuesResponse,
-    InsertVenue,
-    Venue,
-} from "@/db/types";
+import {GetVenuesFilters, GetVenuesResponse, InsertVenue, Venue} from "@/db/types";
 import db from "@/db/drizzle";
 import {venue} from "@/db/schema";
 
-export const getVenuesIds = async (): Promise<
-    {id: number; idGoout: number | null; idKudyznudy: string | null}[]
-> => {
+export const getVenuesIds = async (): Promise<{id: number; idGoout: number | null; idKudyznudy: string | null}[]> => {
     return db
         .select({
             id: venue.id,
@@ -20,9 +13,7 @@ export const getVenuesIds = async (): Promise<
         })
         .from(venue);
 };
-export const getVenues = async (
-    filters: GetVenuesFilters
-): Promise<GetVenuesResponse> => {
+export const getVenues = async (filters: GetVenuesFilters): Promise<GetVenuesResponse> => {
     const data = await db.query.venue.findMany({
         columns: {
             id: true,
@@ -34,9 +25,7 @@ export const getVenues = async (
                 columns: {
                     id: true,
                 },
-                where: filters.active
-                    ? (schedule, {gt}) => gt(schedule.endAt, new Date())
-                    : undefined,
+                where: filters.active ? (schedule, {gt}) => gt(schedule.endAt, new Date()) : undefined,
                 with: {
                     event: {
                         columns: {
@@ -56,9 +45,7 @@ export const getVenues = async (
         },
     });
 
-    return filters.active
-        ? data.filter(({schedules}) => schedules.length > 0)
-        : data;
+    return filters.active ? data.filter(({schedules}) => schedules.length > 0) : data;
 };
 export const addVenue = async (insertVenue: InsertVenue): Promise<Venue> => {
     const insertedData = await db.insert(venue).values(insertVenue).returning();

@@ -5,6 +5,7 @@ import styles from "@/components/ScheduleDetailSmall.module.scss";
 import CategoryIcon from "@/components/CategoryIcon";
 import Image from "next/image";
 import {InfoWindow} from "@vis.gl/react-google-maps";
+import {cx} from "@/utils";
 
 interface Props {
     scheduleId: number;
@@ -35,13 +36,31 @@ function ScheduleDetailSmall(props: Props) {
     const [schedule, setSchedule] = useState<GetScheduleResponse>(undefined);
 
     useEffect(() => {
-        setSchedule(undefined);
         const data = getSchedule(scheduleId);
         data.then((res) => setSchedule(res));
     }, [scheduleId]);
 
-    if (!schedule) {
-        return null;
+    if (!schedule || schedule.id !== scheduleId) {
+        return (
+            <InfoWindow anchor={markerRef}>
+                <div className={cx({[styles.container]: true, [styles.skeleton]: true})}>
+                    <div className="flex items-center justify-center">
+                        <div className={styles.eventImg} />
+                    </div>
+                    <div className={styles.mainContent}>
+                        <div className={styles.eventMeta}>
+                            <span className={styles.date} />
+                            <div className={styles.title} />
+                            <div className={styles.venue} />
+                        </div>
+                        <div className={styles.description} />
+                        <div className={styles.btnsContainer}>
+                            <button className={styles.toggleDetail}>Zobrazit více</button>
+                        </div>
+                    </div>
+                </div>
+            </InfoWindow>
+        );
     }
 
     const {event} = schedule;
@@ -51,13 +70,17 @@ function ScheduleDetailSmall(props: Props) {
     return (
         <InfoWindow anchor={markerRef}>
             <div className={styles.container}>
-                <div className={styles.icon}>
-                    <CategoryIcon category={(event.category?.value as CategoryTypeEnum) || null} colored size={24} />
-                </div>
                 <div className="flex items-center justify-center">
                     <Image src={eventImg} alt={event.title} width={180} height={120} className={styles.eventImg} />
                 </div>
                 <div className={styles.mainContent}>
+                    <div className={styles.icon}>
+                        <CategoryIcon
+                            category={(event.category?.value as CategoryTypeEnum) || null}
+                            colored
+                            size={24}
+                        />
+                    </div>
                     <div className={styles.eventMeta}>
                         <span className={styles.date}>{formatDate(schedule.startAt)}</span>
                         <h2 className={styles.title}>{event.title}</h2>
@@ -72,4 +95,5 @@ function ScheduleDetailSmall(props: Props) {
         </InfoWindow>
     );
 }
+
 export default memo(ScheduleDetailSmall);

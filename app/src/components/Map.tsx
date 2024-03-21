@@ -124,6 +124,11 @@ function Map() {
     ) => {
         ev.stop();
 
+        if (selectedMarker && selectedMarker.venueIds.includes(venueId)) {
+            setSelectedMarker(null);
+            return;
+        }
+
         ev.latLng && map?.panTo(ev.latLng);
         markerRef && setSelectedMarker({venueIds: [venueId], ref: markerRef});
     };
@@ -190,7 +195,9 @@ function Map() {
                     <Marker
                         key={venueId}
                         position={position}
-                        category={(pointProperties.venue.schedules[0].event.category?.value as CategoryTypeEnum) || null}
+                        category={
+                            (pointProperties.venue.schedules[0].event.category?.value as CategoryTypeEnum) || null
+                        }
                         onMarkerClick={handleMarkerClick.bind(null, venueId)}
                     />
                 );

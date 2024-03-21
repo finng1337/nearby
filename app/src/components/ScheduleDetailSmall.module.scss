@@ -16,16 +16,30 @@
   flex-direction: row;
   gap: pxToRem(12);
   box-shadow: 0 0 pxToRem(8) pxToRem(4) rgba(0, 0, 0, 0.2);
+
+  @media screen and (max-width: $breakpoint-md) {
+    width: pxToRem(220);
+    height: pxToRem(320);
+    flex-direction: column;
+  }
 }
 
 .mainContent {
+  position: relative;
   width: pxToRem(232);
+  height: 100%;
   display: flex;
   flex-direction: column;
   padding-top: pxToRem(8);
+
+  @media screen and (max-width: $breakpoint-md) {
+    width: pxToRem(204);
+  }
 }
 
 .eventImg {
+  width: pxToRem(180);
+  height: pxToRem(120);
   object-fit: contain;
   border-radius: pxToRem(4);
   box-shadow: 0 0 pxToRem(4) pxToRem(2) rgba(0, 0, 0, 0.15);
@@ -35,6 +49,10 @@
   display: flex;
   flex-direction: column;
   gap: pxToRem(4);
+
+  @media screen and (max-width: $breakpoint-md) {
+    gap: pxToRem(2);
+  }
 }
 
 .date {
@@ -50,6 +68,12 @@
 .title {
   @include title-small;
   @include ellipsis;
+
+  @media screen and (max-width: $breakpoint-md) {
+    @include text-body;
+
+    font-weight: bold;
+  }
 }
 
 .venue {
@@ -63,12 +87,16 @@
   @include multiline-ellipsis(3);
 
   margin-top: pxToRem(10);
+
+  @media screen and (max-width: $breakpoint-md) {
+    margin-top: pxToRem(8);
+  }
 }
 
 .icon {
   position: absolute;
-  top: pxToRem(10);
-  right: pxToRem(12);
+  top: pxToRem(2);
+  right: pxToRem(2);
 }
 
 .btnsContainer {
@@ -87,4 +115,40 @@
   font-weight: bold;
   background-color: $shade200;
   border-radius: pxToRem(4);
+}
+
+.skeleton {
+  .date,
+  .venue,
+  .title,
+  .eventImg,
+  .description {
+    border-radius: pxToRem(4);
+    background: linear-gradient(110deg, $shade100 8%, $shade50 18%, $shade100 33%);
+    background-size: 200% 100%;
+    animation: 1.5s shine linear infinite;
+  }
+
+  .date,
+  .venue {
+    height: pxToRem(16);
+  }
+
+  .title {
+    height: pxToRem(20);
+  }
+
+  .description {
+    height: pxToRem(60);
+  }
+
+  .eventImg {
+    box-shadow: none;
+  }
+}
+
+@keyframes shine {
+  to {
+    background-position-x: -200%;
+  }
 }

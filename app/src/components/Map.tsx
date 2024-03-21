@@ -193,7 +193,6 @@ function Map() {
                             key={pointProperties.venue.id}
                             position={position}
                             count={pointProperties.venue.schedules.length}
-                            onClick={handleMarkerClick.bind(null, pointProperties.venue.id.toString())}
                             onClick={handleMarkerClick.bind(
                                 null,
                                 pointProperties.venue.id.toString()

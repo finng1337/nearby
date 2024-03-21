@@ -4,6 +4,8 @@ import styles from "@/components/markers/Markers.module.scss";
 type Props = {
     position: google.maps.LatLngLiteral;
     count: number;
+    venueIds: number[];
+    selected?: boolean;
 } & AdvancedMarkerProps;
 export default function ClusterMarker(props: Props) {
     const {position, count, ...rest} = props;

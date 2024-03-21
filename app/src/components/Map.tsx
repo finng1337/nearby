@@ -14,6 +14,41 @@ interface P {
 interface C {
     venues: GetVenuesResponse;
 }
+
+const getClusters = (
+    index: Supercluster<P, C> | null,
+    map: google.maps.Map,
+    venues: GetVenuesResponse
+): (Supercluster.PointFeature<P> | Supercluster.ClusterFeature<C>)[] => {
+    if (index && venues.length > 0) {
+        const mapZoom = map.getZoom();
+        const mapBounds = map.getBounds()?.toJSON();
+
+        if (mapZoom && mapBounds) {
+            console.log("getClusters");
+            return index.getClusters(
+                [
+                    mapBounds.west,
+                    mapBounds.south,
+                    mapBounds.east,
+                    mapBounds.north,
+                ],
+                mapZoom
+            );
+        }
+    }
+
+    return [];
+};
+
+const getSchedulesCount = (venues: GetVenuesResponse): number => {
+    return venues.reduce((acc, venue) => {
+        return acc + venue.schedules.length;
+    }, 0);
+};
+
+const makeClusterKey = (clusterId: number) => `0${clusterId}`;
+
 function Map() {
     const map = useMap();
     const index = useRef<Supercluster<P, C> | null>(null);
@@ -33,61 +68,37 @@ function Map() {
 
     useEffect(() => {
         if (venues.length > 0) {
-            loadIndex();
-            updateClusters();
+            index.current = new Supercluster<P, C>({
+                radius: 160,
+                maxZoom: 20,
+                map: (props) => ({venues: [props.venue]}),
+                reduce: (accumulated, props) => {
+                    accumulated.venues = [
+                        ...accumulated.venues,
+                        ...props.venues,
+                    ];
+                },
+            });
+            index.current.load(
+                venues.map(
+                    (venue) =>
+                        ({
+                            type: "Feature",
+                            geometry: {
+                                type: "Point",
+                                coordinates: [
+                                    parseFloat(venue.lon),
+                                    parseFloat(venue.lat),
+                                ],
+                            },
+                            properties: {venue},
+                        }) as Supercluster.PointFeature<P>
+                )
+            );
+
+            map && setClusters(getClusters(index.current, map, venues));
         }
     }, [venues]);
-
-    const makeClusterKey = (clusterId: number) => `0${clusterId}`;
-
-    const loadIndex = () => {
-        index.current = new Supercluster<P, C>({
-            radius: 160,
-            maxZoom: 20,
-            map: (props) => ({venues: [props.venue]}),
-            reduce: (accumulated, props) => {
-                accumulated.venues = [...accumulated.venues, ...props.venues];
-            },
-        });
-        index.current.load(
-            venues.map(
-                (venue) =>
-                    ({
-                        type: "Feature",
-                        geometry: {
-                            type: "Point",
-                            coordinates: [
-                                parseFloat(venue.lon),
-                                parseFloat(venue.lat),
-                            ],
-                        },
-                        properties: {venue},
-                    }) as Supercluster.PointFeature<P>
-            )
-        );
-    };
-
-    const updateClusters = () => {
-        if (index.current && venues.length > 0) {
-            const mapZoom = map?.getZoom();
-            const mapBounds = map?.getBounds()?.toJSON();
-
-            if (mapZoom && mapBounds) {
-                console.log("updating clusters");
-                setClusters(
-                    index.current.getClusters(
-                        [
-                            mapBounds.west,
-                            mapBounds.south,
-                            mapBounds.east,
-                            mapBounds.north,
-                        ],
-                        mapZoom
-                    )
-                );
-            }
-        }
-    };
 
     const handleClusterClick = (
         clusterProperties: Supercluster.ClusterFeature<C>["properties"],
@@ -128,15 +139,9 @@ function Map() {
 
     const handleIdle = () => {
         if (boundsChanged) {
-            updateClusters();
+            map && setClusters(getClusters(index.current, map, venues));
             setBoundsChanged(false);
         }
-    };
-
-    const getSchedulesCount = (venues: GetVenuesResponse): number => {
-        return venues.reduce((acc, venue) => {
-            return acc + venue.schedules.length;
-        }, 0);
     };
 
     return (
@@ -193,10 +198,14 @@ function Map() {
                             key={pointProperties.venue.id}
                             position={position}
                             count={pointProperties.venue.schedules.length}
+                            venueIds={[pointProperties.venue.id]}
                             onClick={handleMarkerClick.bind(
                                 null,
                                 pointProperties.venue.id.toString()
                             )}
+                            selected={
+                                selectedMarkerId ===
+                                pointProperties.venue.id.toString()
                             }
                         />
                     ) : (

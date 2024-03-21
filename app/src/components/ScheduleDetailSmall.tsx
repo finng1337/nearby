@@ -8,6 +8,26 @@ import Image from "next/image";
 interface Props {
     scheduleId: number;
 }
+
+const formatDate = (date: Date) => {
+    const day = Intl.DateTimeFormat("cs-CZ", {weekday: "short"}).format(date);
+    const dayMonth = Intl.DateTimeFormat("cs-CZ", {
+        day: "numeric",
+        month: "numeric",
+    }).format(date);
+    const time = Intl.DateTimeFormat("cs-CZ", {
+        hour: "numeric",
+        minute: "numeric",
+    }).format(date);
+
+    return `${day} ${dayMonth} v ${time}`;
+};
+
+const htmlToText = (html: string) => {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+};
+
 function ScheduleDetailSmall(props: Props) {
     const {scheduleId} = props;
     const [schedule, setSchedule] = useState<GetScheduleResponse>(undefined);
@@ -15,32 +35,7 @@ function ScheduleDetailSmall(props: Props) {
     useEffect(() => {
         const data = getSchedule(scheduleId);
         data.then((res) => setSchedule(res));
-    }, []);
-
-    const formatDate = (date: Date) => {
-        if (!schedule) {
-            return null;
-        }
-
-        const day = Intl.DateTimeFormat("cs-CZ", {weekday: "short"}).format(
-            date
-        );
-        const dayMonth = Intl.DateTimeFormat("cs-CZ", {
-            day: "numeric",
-            month: "numeric",
-        }).format(date);
-        const time = Intl.DateTimeFormat("cs-CZ", {
-            hour: "numeric",
-            minute: "numeric",
-        }).format(date);
-
-        return `${day} ${dayMonth} v ${time}`;
-    };
-
-    const htmlToText = (html: string) => {
-        const doc = new DOMParser().parseFromString(html, "text/html");
-        return doc.body.textContent || "";
-    };
+    }, [scheduleId]);
 
     if (!schedule) {
         return null;

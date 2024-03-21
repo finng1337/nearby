@@ -4,7 +4,7 @@ import {CategoryTypeEnum, GetVenuesResponse} from "@/db/types";
 import {APIProvider, Map as GoogleMap, useMap} from "@vis.gl/react-google-maps";
 import Marker from "@/components/markers/Marker";
 import Supercluster from "supercluster";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import ClusterMarker from "@/components/markers/ClusterMarker";
 import {getVenues} from "@/db/actions/venueActions";
 import ScheduleDetailSmall from "@/components/ScheduleDetailSmall";
@@ -139,6 +139,10 @@ function Map() {
         }
     };
 
+    const handleDetailDismiss = useCallback(() => {
+        setSelectedMarker(null);
+    }, [setSelectedMarker]);
+
     return (
         <GoogleMap
             mapId={process.env.NEXT_PUBLIC_GOOGLE_MAP_ID!}
@@ -158,6 +162,7 @@ function Map() {
                 <ScheduleDetailSmall
                     markerRef={selectedMarker.ref}
                     scheduleId={venues.find((venue) => venue.id === selectedMarker.venueIds[0])!.schedules[0].id}
+                    onDetailDismiss={handleDetailDismiss}
                 />
             )}
             {clusters.map((cluster) => {

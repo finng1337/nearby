@@ -1,15 +1,17 @@
 import {CategoryTypeEnum, GetScheduleResponse} from "@/db/types";
-import {memo, useEffect, useState} from "react";
+import React, {memo, useEffect, useRef, useState} from "react";
 import {getSchedule} from "@/db/actions/scheduleActions";
 import styles from "@/components/ScheduleDetailSmall.module.scss";
 import CategoryIcon from "@/components/CategoryIcon";
 import Image from "next/image";
 import {InfoWindow} from "@vis.gl/react-google-maps";
 import {cx} from "@/utils";
+import useSWRImmutable from "swr/immutable";
 
 interface Props {
     scheduleId: number;
     markerRef: google.maps.marker.AdvancedMarkerElement;
+    onDetailDismiss?: () => void;
 }
 
 const formatDate = (date: Date) => {
@@ -32,20 +34,43 @@ const htmlToText = (html: string) => {
 };
 
 function ScheduleDetailSmall(props: Props) {
-    const {scheduleId, markerRef} = props;
-    const [schedule, setSchedule] = useState<GetScheduleResponse>(undefined);
+    const {scheduleId, markerRef, onDetailDismiss} = props;
     const [imgLoaded, setImgLoaded] = useState<boolean>(false);
+    const {data: schedule} = useSWRImmutable<GetScheduleResponse>(["schedule", scheduleId], () =>
+        getSchedule(scheduleId)
+    );
+    const mouseMove = useRef<boolean>(false);
+    const dialogRef = useRef<HTMLDivElement>(null);
+
+    const handleDialogDismiss = (e: MouseEvent) => {
+        if (mouseMove.current) {
+            mouseMove.current = false;
+            return;
+        }
+        dialogRef.current && !dialogRef.current.contains(e.target as Node) && onDetailDismiss!();
+    };
+
+    useEffect(() => {
+        if (onDetailDismiss) {
+            document.addEventListener("mousedown", () => (mouseMove.current = false));
+            document.addEventListener("mousemove", () => (mouseMove.current = true));
+            document.addEventListener("click", handleDialogDismiss);
+            return () => {
+                document.removeEventListener("mousedown", () => (mouseMove.current = false));
+                document.removeEventListener("mousemove", () => (mouseMove.current = true));
+                document.removeEventListener("click", handleDialogDismiss);
+            };
+        }
+    }, []);
 
     useEffect(() => {
         setImgLoaded(false);
-        const data = getSchedule(scheduleId);
-        data.then((res) => setSchedule(res));
     }, [scheduleId]);
 
     if (!schedule || schedule.id !== scheduleId) {
         return (
             <InfoWindow anchor={markerRef}>
-                <div className={cx({[styles.container]: true, [styles.skeleton]: true})}>
+                <div className={cx({[styles.container]: true, [styles.skeleton]: true})} ref={dialogRef}>
                     <div className="flex items-center justify-center">
                         <div className={styles.eventImgSkeleton} />
                     </div>
@@ -71,7 +96,7 @@ function ScheduleDetailSmall(props: Props) {
 
     return (
         <InfoWindow anchor={markerRef}>
-            <div className={styles.container}>
+            <div className={styles.container} ref={dialogRef}>
                 <div className="flex items-center justify-center">
                     <Image
                         src={eventImg}
@@ -105,5 +130,4 @@ function ScheduleDetailSmall(props: Props) {
         </InfoWindow>
     );
 }
-
 export default memo(ScheduleDetailSmall);

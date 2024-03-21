@@ -14,6 +14,14 @@ body {
   @include text-body;
 }
 
+//Google Maps Marker styles
+.yNHHyP-marker-view {
+  &:active,
+  &:focus {
+    outline: none;
+  }
+}
+
 //Google Maps InfoWindow styles
 .gm-style-iw {
   transform: translate(-50%, calc(-100% + 25px)) !important;

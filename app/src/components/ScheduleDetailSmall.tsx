@@ -34,8 +34,10 @@ const htmlToText = (html: string) => {
 function ScheduleDetailSmall(props: Props) {
     const {scheduleId, markerRef} = props;
     const [schedule, setSchedule] = useState<GetScheduleResponse>(undefined);
+    const [imgLoaded, setImgLoaded] = useState<boolean>(false);
 
     useEffect(() => {
+        setImgLoaded(false);
         const data = getSchedule(scheduleId);
         data.then((res) => setSchedule(res));
     }, [scheduleId]);
@@ -45,7 +47,7 @@ function ScheduleDetailSmall(props: Props) {
             <InfoWindow anchor={markerRef}>
                 <div className={cx({[styles.container]: true, [styles.skeleton]: true})}>
                     <div className="flex items-center justify-center">
-                        <div className={styles.eventImg} />
+                        <div className={styles.eventImgSkeleton} />
                     </div>
                     <div className={styles.mainContent}>
                         <div className={styles.eventMeta}>
@@ -71,7 +73,15 @@ function ScheduleDetailSmall(props: Props) {
         <InfoWindow anchor={markerRef}>
             <div className={styles.container}>
                 <div className="flex items-center justify-center">
-                    <Image src={eventImg} alt={event.title} width={180} height={120} className={styles.eventImg} />
+                    <Image
+                        src={eventImg}
+                        alt={event.title}
+                        width={180}
+                        height={120}
+                        onLoad={() => setImgLoaded(true)}
+                        className={cx({[styles.eventImg]: true, "absolute opacity-0": !imgLoaded})}
+                    />
+                    {!imgLoaded && <div className={styles.eventImgSkeleton} />}
                 </div>
                 <div className={styles.mainContent}>
                     <div className={styles.icon}>

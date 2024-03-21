@@ -16,6 +16,11 @@
   justify-content: center;
   align-items: center;
   box-shadow: 0 0 pxToRem(8) pxToRem(4) rgba(0, 0, 0, 0.2);
+
+  &:active,
+  &:focus {
+    outline: none;
+  }
 }
 
 .cluster {

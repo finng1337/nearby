@@ -37,7 +37,8 @@
   }
 }
 
-.eventImg {
+.eventImg,
+.eventImgSkeleton {
   width: pxToRem(180);
   height: pxToRem(120);
   object-fit: contain;
@@ -115,13 +116,17 @@
   font-weight: bold;
   background-color: $shade200;
   border-radius: pxToRem(4);
+
+  &:active,
+  &:focus {
+    outline: none;
+  }
 }
 
 .skeleton {
   .date,
   .venue,
   .title,
-  .eventImg,
   .description {
     border-radius: pxToRem(4);
     background: linear-gradient(110deg, $shade100 8%, $shade50 18%, $shade100 33%);
@@ -141,10 +146,14 @@
   .description {
     height: pxToRem(60);
   }
+}
 
-  .eventImg {
-    box-shadow: none;
-  }
+.eventImgSkeleton {
+  border-radius: pxToRem(4);
+  background: linear-gradient(110deg, $shade100 8%, $shade50 18%, $shade100 33%);
+  background-size: 200% 100%;
+  animation: 1.5s shine linear infinite;
+  box-shadow: none;
 }
 
 @keyframes shine {

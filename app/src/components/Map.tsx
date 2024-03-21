@@ -129,7 +129,6 @@ function Map() {
             return;
         }
 
-        ev.latLng && map?.panTo(ev.latLng);
         markerRef && setSelectedMarker({venueIds: [venueId], ref: markerRef});
     };
 

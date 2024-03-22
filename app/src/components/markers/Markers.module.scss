@@ -29,49 +29,8 @@
 
 .marker {
   color: white;
-}
 
-.exhibitionMarker {
-  background-color: $categoryExhibition;
-}
-
-.filmMarker {
-  background-color: $categoryFilm;
-}
-
-.concertMarker {
-  background-color: $categoryConcert;
-}
-
-.forChildrenMarker {
-  background-color: $categoryForChildren;
-}
-
-.sportMarker {
-  background-color: $categorySport;
-}
-
-.playMarker {
-  background-color: $categoryPlay;
-}
-
-.clubbingMarker {
-  background-color: $categoryClubbing;
-}
-
-.festivalMarker {
-  background-color: $categoryFestival;
-}
-
-.inCityMarker {
-  background-color: $categoryInCity;
-}
-
-.charityMarker {
-  background-color: $categoryCharity;
-}
-
-.gastronomyMarker {
-  background-color: $categoryGastronomy;
-  color: black;
+  &:global(.bg-categoryGastronomy) {
+    color: black;
+  }
 }

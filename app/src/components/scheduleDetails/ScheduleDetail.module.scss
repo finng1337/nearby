@@ -26,7 +26,6 @@
   flex-direction: column;
   gap: pxToRem(16);
   padding: pxToRem(16);
-  margin: pxToRem(16);
 
   h1 {
     @include title;

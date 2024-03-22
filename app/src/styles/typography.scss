@@ -21,6 +21,12 @@
   font-weight: bold;
 }
 
+@mixin title {
+  font-size: pxToRem(22);
+  line-height: pxToRem(28);
+  font-weight: bold;
+}
+
 @mixin ellipsis {
   white-space: nowrap;
   overflow: hidden;

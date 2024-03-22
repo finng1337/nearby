@@ -2,17 +2,24 @@ import {AdvancedMarker, useAdvancedMarkerRef} from "@vis.gl/react-google-maps";
 import {CategoryTypeEnum} from "@/db/types";
 import styles from "@/components/markers/Markers.module.scss";
 import CategoryIcon from "@/components/CategoryIcon";
-import {cx} from "@/utils";
-import {memo} from "react";
+import {cx, MarkerHandler} from "@/utils";
+import {memo, useCallback} from "react";
 
 type Props = {
     position: google.maps.LatLngLiteral;
     category: CategoryTypeEnum | null;
-    onMarkerClick?: (marker: google.maps.marker.AdvancedMarkerElement | null, e: google.maps.MapMouseEvent) => void;
+    onMarkerClick?: MarkerHandler;
 };
 function Marker(props: Props) {
     const {position, category, onMarkerClick} = props;
     const [markerRef, marker] = useAdvancedMarkerRef();
+
+    const handleMarkerClick = useCallback(
+        (e: google.maps.MapMouseEvent) => {
+            onMarkerClick && onMarkerClick(marker, e);
+        },
+        [onMarkerClick, marker]
+    );
 
     return (
         <AdvancedMarker
@@ -32,7 +39,7 @@ function Marker(props: Props) {
             })}
             position={position}
             ref={markerRef}
-            onClick={onMarkerClick?.bind(null, marker)}
+            onClick={handleMarkerClick}
         >
             <CategoryIcon category={category} size={24} />
         </AdvancedMarker>

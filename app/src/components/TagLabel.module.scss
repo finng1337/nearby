@@ -1,0 +1,11 @@
+@import "../styles/functions";
+@import "../styles/typography";
+
+.tag {
+  @include text-small;
+
+  text-transform: uppercase;
+  letter-spacing: pxToRem(1);
+  padding: pxToRem(2) pxToRem(6);
+  border-radius: pxToRem(6);
+}

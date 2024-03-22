@@ -1,31 +1,18 @@
-import {CategoryTypeEnum, GetScheduleResponse} from "@/db/types";
-import React, {memo, useEffect, useRef, useState} from "react";
+import {CategoryTypeEnum} from "@/db/types";
+import React, {memo, useCallback, useEffect, useState} from "react";
 import {getSchedule} from "@/db/actions/scheduleActions";
-import styles from "@/components/ScheduleDetailSmall.module.scss";
+import styles from "@/components/scheduleDetails/ScheduleDetailSmall.module.scss";
 import CategoryIcon from "@/components/CategoryIcon";
 import Image from "next/image";
 import {InfoWindow} from "@vis.gl/react-google-maps";
-import {cx} from "@/utils";
+import {cx, formatDate} from "@/utils";
 import useSWRImmutable from "swr/immutable";
 
 interface Props {
     scheduleId: number;
     markerRef: google.maps.marker.AdvancedMarkerElement;
+    onDetailToggle?: (scheduleId: number) => void;
 }
-
-const formatDate = (date: Date) => {
-    const day = Intl.DateTimeFormat("cs-CZ", {weekday: "short"}).format(date);
-    const dayMonth = Intl.DateTimeFormat("cs-CZ", {
-        day: "numeric",
-        month: "numeric",
-    }).format(date);
-    const time = Intl.DateTimeFormat("cs-CZ", {
-        hour: "numeric",
-        minute: "numeric",
-    }).format(date);
-
-    return `${day} ${dayMonth} v ${time}`;
-};
 
 const htmlToText = (html: string) => {
     const doc = new DOMParser().parseFromString(html, "text/html");
@@ -33,15 +20,17 @@ const htmlToText = (html: string) => {
 };
 
 function ScheduleDetailSmall(props: Props) {
-    const {scheduleId, markerRef} = props;
+    const {scheduleId, markerRef, onDetailToggle} = props;
     const [imgLoaded, setImgLoaded] = useState<boolean>(false);
-    const {data: schedule, isLoading} = useSWRImmutable<GetScheduleResponse>(["schedule", scheduleId], () =>
-        getSchedule(scheduleId)
-    );
+    const {data: schedule, isLoading} = useSWRImmutable(["schedule", scheduleId], () => getSchedule(scheduleId));
 
     useEffect(() => {
         setImgLoaded(false);
     }, [scheduleId]);
+
+    const handleDetailToggle = useCallback(() => {
+        onDetailToggle && onDetailToggle(scheduleId);
+    }, [onDetailToggle, scheduleId]);
 
     if (isLoading || !schedule) {
         return (
@@ -93,13 +82,15 @@ function ScheduleDetailSmall(props: Props) {
                         />
                     </div>
                     <div className={styles.eventMeta}>
-                        <span className={styles.date}>{formatDate(schedule.startAt)}</span>
+                        <span className={styles.date}>{formatDate(schedule.startAt, schedule.endAt)}</span>
                         <h2 className={styles.title}>{event.title}</h2>
                         <span className={styles.venue}>{venue.title}</span>
                     </div>
                     {event.description && <p className={styles.description}>{htmlToText(event.description)}</p>}
                     <div className={styles.btnsContainer}>
-                        <button className={styles.toggleDetail}>Zobrazit více</button>
+                        <button className={styles.toggleDetail} onClick={handleDetailToggle}>
+                            Zobrazit více
+                        </button>
                     </div>
                 </div>
             </div>

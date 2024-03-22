@@ -1,6 +1,6 @@
-@import "../styles/functions";
-@import "../styles/typography";
-@import "../styles/variables";
+@import "../../styles/functions";
+@import "../../styles/typography";
+@import "../../styles/variables";
 
 .container {
   @include text-body;
@@ -81,7 +81,7 @@
   @include text-small;
   @include ellipsis;
 
-  color: $shade800;
+  color: $shade500;
 }
 
 .description {

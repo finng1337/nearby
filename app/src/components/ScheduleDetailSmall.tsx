@@ -11,7 +11,6 @@ import useSWRImmutable from "swr/immutable";
 interface Props {
     scheduleId: number;
     markerRef: google.maps.marker.AdvancedMarkerElement;
-    onDetailDismiss?: () => void;
 }
 
 const formatDate = (date: Date) => {
@@ -34,43 +33,20 @@ const htmlToText = (html: string) => {
 };
 
 function ScheduleDetailSmall(props: Props) {
-    const {scheduleId, markerRef, onDetailDismiss} = props;
+    const {scheduleId, markerRef} = props;
     const [imgLoaded, setImgLoaded] = useState<boolean>(false);
-    const {data: schedule} = useSWRImmutable<GetScheduleResponse>(["schedule", scheduleId], () =>
+    const {data: schedule, isLoading} = useSWRImmutable<GetScheduleResponse>(["schedule", scheduleId], () =>
         getSchedule(scheduleId)
     );
-    const mouseMove = useRef<boolean>(false);
-    const dialogRef = useRef<HTMLDivElement>(null);
-
-    const handleDialogDismiss = (e: MouseEvent) => {
-        if (mouseMove.current) {
-            mouseMove.current = false;
-            return;
-        }
-        dialogRef.current && !dialogRef.current.contains(e.target as Node) && onDetailDismiss!();
-    };
-
-    useEffect(() => {
-        if (onDetailDismiss) {
-            document.addEventListener("mousedown", () => (mouseMove.current = false));
-            document.addEventListener("mousemove", () => (mouseMove.current = true));
-            document.addEventListener("click", handleDialogDismiss);
-            return () => {
-                document.removeEventListener("mousedown", () => (mouseMove.current = false));
-                document.removeEventListener("mousemove", () => (mouseMove.current = true));
-                document.removeEventListener("click", handleDialogDismiss);
-            };
-        }
-    }, []);
 
     useEffect(() => {
         setImgLoaded(false);
     }, [scheduleId]);
 
-    if (!schedule || schedule.id !== scheduleId) {
+    if (isLoading || !schedule) {
         return (
             <InfoWindow anchor={markerRef}>
-                <div className={cx({[styles.container]: true, [styles.skeleton]: true})} ref={dialogRef}>
+                <div className={cx({[styles.container]: true, [styles.skeleton]: true})}>
                     <div className="flex items-center justify-center">
                         <div className={styles.eventImgSkeleton} />
                     </div>
@@ -96,7 +72,7 @@ function ScheduleDetailSmall(props: Props) {
 
     return (
         <InfoWindow anchor={markerRef}>
-            <div className={styles.container} ref={dialogRef}>
+            <div className={styles.container}>
                 <div className="flex items-center justify-center">
                     <Image
                         src={eventImg}

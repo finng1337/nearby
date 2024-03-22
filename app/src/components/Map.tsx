@@ -87,14 +87,12 @@ function Map() {
         }
     }, [venues]);
 
-    const handleClusterClick = (
+    const handleClusterClick = useCallback((
         clusterProperties: Supercluster.ClusterFeature<C>["properties"],
         markerRef: google.maps.marker.AdvancedMarkerElement | null,
         ev: google.maps.MapMouseEvent
     ) => {
         ev.stop();
-
-        ev.latLng && map?.panTo(ev.latLng);
 
         const {venues, cluster_id} = clusterProperties;
         const venueLat = venues[0].lat;
@@ -105,6 +103,7 @@ function Map() {
             const zoom = index.current.getClusterExpansionZoom(cluster_id);
 
             if (zoom <= 19) {
+                ev.latLng && map?.panTo(ev.latLng);
                 map?.setZoom(zoom);
                 setSelectedMarker(null);
                 return;
@@ -115,9 +114,9 @@ function Map() {
             index.current?.getLeaves(cluster_id, Infinity).map((marker) => marker.properties.venue.id) || [];
 
         markerRef && setSelectedMarker({venueIds, ref: markerRef});
-    };
+    }, [map, index, setSelectedMarker]);
 
-    const handleMarkerClick = (
+    const handleMarkerClick = useCallback((
         venueId: number,
         markerRef: google.maps.marker.AdvancedMarkerElement | null,
         ev: google.maps.MapMouseEvent
@@ -130,18 +129,24 @@ function Map() {
         }
 
         markerRef && setSelectedMarker({venueIds: [venueId], ref: markerRef});
-    };
+    }, [selectedMarker, setSelectedMarker]);
 
-    const handleIdle = () => {
+    const handleIdle = useCallback(() => {
         if (boundsChanged) {
             map && setClusters(getClusters(index.current, map, venues));
             setBoundsChanged(false);
         }
-    };
+    }, [map, venues, setClusters, boundsChanged, setBoundsChanged]);
+
+    const handleBoundsChanged = useCallback(() => {
+        setBoundsChanged(true);
+    }, [setBoundsChanged]);
 
     const handleDetailDismiss = useCallback(() => {
         setSelectedMarker(null);
     }, [setSelectedMarker]);
+
+    console.log("Map render");
 
     return (
         <GoogleMap
@@ -155,14 +160,15 @@ function Map() {
             fullscreenControl={false}
             clickableIcons={false}
             gestureHandling="greedy"
-            onBoundsChanged={() => setBoundsChanged(true)}
+            onBoundsChanged={handleBoundsChanged}
             onIdle={handleIdle}
+            onClick={handleDetailDismiss}
+            onDragstart={handleDetailDismiss}
         >
             {selectedMarker && selectedMarker.venueIds.length === 1 && (
                 <ScheduleDetailSmall
                     markerRef={selectedMarker.ref}
                     scheduleId={venues.find((venue) => venue.id === selectedMarker.venueIds[0])!.schedules[0].id}
-                    onDetailDismiss={handleDetailDismiss}
                 />
             )}
             {clusters.map((cluster) => {

@@ -94,6 +94,7 @@ function ScheduleDetailSmall(props: Props) {
                     </div>
                 </div>
             </div>
+            <div className={styles.arrow} />
         </InfoWindow>
     );
 }

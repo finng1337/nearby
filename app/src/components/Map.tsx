@@ -162,9 +162,10 @@ function Map() {
 
     const toggleDetail = useCallback(
         (scheduleId: number) => {
+            setShowSmallDetail(null);
             setShowDetail((prev) => (prev === scheduleId ? null : scheduleId));
         },
-        [setShowDetail]
+        [setShowDetail, setShowSmallDetail]
     );
 
     return (

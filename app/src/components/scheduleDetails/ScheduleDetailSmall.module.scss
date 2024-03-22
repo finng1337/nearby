@@ -123,6 +123,18 @@
   }
 }
 
+.arrow {
+  position: absolute;
+  content: "";
+  width: pxToRem(32);
+  height: pxToRem(12);
+  transform: translate(50%, -2px);
+  clip-path: polygon(0 0, 50% 100%, 100% 0);
+  background-color: white;
+  top: 100%;
+  right: 50%;
+}
+
 .skeleton {
   .date,
   .venue,

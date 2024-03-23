@@ -51,7 +51,12 @@ function ScheduleDetail(props: Props) {
     }, [onDismiss, scheduleId]);
 
     if (isLoading || !schedule) {
-        return <div className={styles.dialog}>Loading...</div>;
+        return (
+            <>
+                <div className={styles.overlay} onClick={handleDismiss} />
+                <div className={styles.dialog}>Loading...</div>
+            </>
+        );
     }
 
     const {event} = schedule;
@@ -89,7 +94,7 @@ function ScheduleDetail(props: Props) {
                             })}
                         </div>
                     </div>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col flex-1">
                         <div className={styles.date}>{formatDate(schedule.startAt, schedule.endAt)}</div>
                         <div className={styles.venue}>{schedule.venue.title}</div>
                         <div className={styles.links}>
@@ -111,11 +116,8 @@ function ScheduleDetail(props: Props) {
                             )}
                         </div>
                         {event.description && (
-                            <p className={styles.description} dangerouslySetInnerHTML={{__html: event.description}} />
+                            <div className={styles.description} dangerouslySetInnerHTML={{__html: event.description}} />
                         )}
-                        <div className={styles.btnsContainer}>
-                            <button className={styles.participateBtn}>Zúčastním se</button>
-                        </div>
                     </div>
                 </div>
             </div>

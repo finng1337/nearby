@@ -38,7 +38,7 @@ function ScheduleListItem(props: Props) {
             <div className={styles.categoryIcon}>
                 <CategoryIcon category={(event.category?.value as CategoryTypeEnum) || null} size={20} colored />
             </div>
-            <Image src={eventImg} alt={event.title} width={180} height={120} className={styles.eventImg} />
+            <Image src={eventImg} alt={event.title} width={64} height={64} className={styles.eventImg} />
             <div className="flex flex-col gap-0.5 w-full">
                 <div className={styles.date}>{formatDate(schedule.startAt, schedule.endAt)}</div>
                 <h2 className={styles.title}>{event.title}</h2>

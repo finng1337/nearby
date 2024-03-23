@@ -88,6 +88,7 @@
   gap: pxToRem(24);
 
   @media screen and (max-width: $breakpoint-sm) {
+    flex: 0 0 auto;
     max-width: 100%;
     align-items: center;
     gap: pxToRem(16);

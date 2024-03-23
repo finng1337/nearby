@@ -37,13 +37,15 @@
   }
 }
 
-.eventImg,
-.eventImgSkeleton {
+.eventImg {
   width: pxToRem(180);
   height: pxToRem(120);
   object-fit: contain;
   border-radius: pxToRem(4);
   box-shadow: 0 0 pxToRem(4) pxToRem(2) rgba(0, 0, 0, 0.15);
+  background: linear-gradient(110deg, $shade100 8%, $shade50 18%, $shade100 33%);
+  background-size: 200% 100%;
+  animation: 1.5s shine linear infinite;
 }
 
 .eventMeta {
@@ -158,14 +160,6 @@
   .description {
     height: pxToRem(60);
   }
-}
-
-.eventImgSkeleton {
-  border-radius: pxToRem(4);
-  background: linear-gradient(110deg, $shade100 8%, $shade50 18%, $shade100 33%);
-  background-size: 200% 100%;
-  animation: 1.5s shine linear infinite;
-  box-shadow: none;
 }
 
 @keyframes shine {

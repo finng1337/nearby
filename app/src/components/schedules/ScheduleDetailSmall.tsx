@@ -1,7 +1,7 @@
 import {CategoryTypeEnum} from "@/db/types";
-import React, {memo, useCallback, useEffect, useState} from "react";
+import React, {memo, useCallback} from "react";
 import {getSchedule} from "@/db/actions/scheduleActions";
-import styles from "@/components/scheduleDetails/ScheduleDetailSmall.module.scss";
+import styles from "@/components/schedules/ScheduleDetailSmall.module.scss";
 import CategoryIcon from "@/components/CategoryIcon";
 import Image from "next/image";
 import {InfoWindow} from "@vis.gl/react-google-maps";
@@ -21,12 +21,7 @@ const htmlToText = (html: string) => {
 
 function ScheduleDetailSmall(props: Props) {
     const {scheduleId, markerRef, onDetailToggle} = props;
-    const [imgLoaded, setImgLoaded] = useState<boolean>(false);
     const {data: schedule, isLoading} = useSWRImmutable(["schedule", scheduleId], () => getSchedule(scheduleId));
-
-    useEffect(() => {
-        setImgLoaded(false);
-    }, [scheduleId]);
 
     const handleDetailToggle = useCallback(() => {
         onDetailToggle && onDetailToggle(scheduleId);
@@ -37,7 +32,7 @@ function ScheduleDetailSmall(props: Props) {
             <InfoWindow anchor={markerRef}>
                 <div className={cx({[styles.container]: true, [styles.skeleton]: true})}>
                     <div className="flex items-center justify-center">
-                        <div className={styles.eventImgSkeleton} />
+                        <div className={styles.eventImg} />
                     </div>
                     <div className={styles.mainContent}>
                         <div className={styles.eventMeta}>
@@ -51,6 +46,7 @@ function ScheduleDetailSmall(props: Props) {
                         </div>
                     </div>
                 </div>
+                <div className={styles.arrow} />
             </InfoWindow>
         );
     }
@@ -63,15 +59,7 @@ function ScheduleDetailSmall(props: Props) {
         <InfoWindow anchor={markerRef}>
             <div className={styles.container}>
                 <div className="flex items-center justify-center">
-                    <Image
-                        src={eventImg}
-                        alt={event.title}
-                        width={180}
-                        height={120}
-                        onLoad={() => setImgLoaded(true)}
-                        className={cx({[styles.eventImg]: true, "absolute opacity-0": !imgLoaded})}
-                    />
-                    {!imgLoaded && <div className={styles.eventImgSkeleton} />}
+                    <Image src={eventImg} alt={event.title} width={180} height={120} className={styles.eventImg} />
                 </div>
                 <div className={styles.mainContent}>
                     <div className={styles.icon}>

@@ -1,7 +1,7 @@
-import React, {memo, useCallback, useEffect, useState} from "react";
+import React, {memo, useCallback} from "react";
 import useSWRImmutable from "swr/immutable";
 import {getSchedule} from "@/db/actions/scheduleActions";
-import styles from "@/components/scheduleDetails/ScheduleDetail.module.scss";
+import styles from "@/components/schedules/ScheduleDetail.module.scss";
 import CloseIcon from "@/icons/close.svg";
 import {CategoryTypeEnum} from "@/db/types";
 import {cx, formatDate} from "@/utils";
@@ -44,12 +44,7 @@ const getCategoryColor = (category: CategoryTypeEnum | null) => {
 };
 function ScheduleDetail(props: Props) {
     const {scheduleId, onDismiss} = props;
-    const [imgLoaded, setImgLoaded] = useState<boolean>(false);
     const {data: schedule, isLoading} = useSWRImmutable(["schedule", scheduleId], () => getSchedule(scheduleId));
-
-    useEffect(() => {
-        setImgLoaded(false);
-    }, [scheduleId]);
 
     const handleDismiss = useCallback(() => {
         onDismiss && onDismiss(scheduleId);
@@ -85,21 +80,11 @@ function ScheduleDetail(props: Props) {
                 </div>
                 <div className={styles.content}>
                     <div className={styles.imgContainer}>
-                        <Image
-                            src={eventImg}
-                            alt={event.title}
-                            width={360}
-                            height={240}
-                            onLoad={() => setImgLoaded(true)}
-                            className={cx({[styles.eventImg]: true, "absolute opacity-0": !imgLoaded})}
-                        />
-                        {!imgLoaded && <div className={styles.eventImgSkeleton} />}
+                        <Image src={eventImg} alt={event.title} width={360} height={240} className={styles.eventImg} />
                         <div className={styles.tags}>
-                            {event.tags.map((tag) => {
-                                if (tag.tag.title) {
-                                    return (
-                                        <TagLabel key={tag.id} tag={tag.tag.title} className={`bg-${categoryColor}`} />
-                                    );
+                            {event.tags.map(({tag}) => {
+                                if (tag.title) {
+                                    return <TagLabel key={tag.id} tag={tag.title} className={`bg-${categoryColor}`} />;
                                 }
                             })}
                         </div>

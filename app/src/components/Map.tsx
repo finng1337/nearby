@@ -7,8 +7,9 @@ import Supercluster from "supercluster";
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import ClusterMarker from "@/components/markers/ClusterMarker";
 import {getVenues} from "@/db/actions/venueActions";
-import ScheduleDetailSmall from "@/components/scheduleDetails/ScheduleDetailSmall";
-import ScheduleDetail from "@/components/scheduleDetails/ScheduleDetail";
+import ScheduleDetailSmall from "@/components/schedules/ScheduleDetailSmall";
+import ScheduleDetail from "@/components/schedules/ScheduleDetail";
+import ScheduleList from "@/components/schedules/ScheduleList";
 
 interface P {
     venue: GetVenuesResponse[0];
@@ -16,9 +17,10 @@ interface P {
 interface C {
     venues: GetVenuesResponse;
 }
-interface SelectedMarker {
+
+interface ScheduleListState {
     venueIds: number[];
-    ref: google.maps.marker.AdvancedMarkerElement;
+    schedulesCount: number;
 }
 
 const getClusters = (
@@ -53,8 +55,9 @@ function Map() {
     const [venues, setVenues] = useState<GetVenuesResponse>([]);
     const [clusters, setClusters] = useState<(Supercluster.PointFeature<P> | Supercluster.ClusterFeature<C>)[]>([]);
     const [boundsChanged, setBoundsChanged] = useState<boolean>(false);
-    const [selectedMarker, setSelectedMarker] = useState<SelectedMarker | null>(null);
+    const [selectedMarker, setSelectedMarker] = useState<google.maps.marker.AdvancedMarkerElement | null>(null);
     const [showSmallDetail, setShowSmallDetail] = useState<number | null>(null);
+    const [showSchedulesList, setShowSchedulesList] = useState<ScheduleListState | null>(null);
     const [showDetail, setShowDetail] = useState<number | null>(null);
 
     useEffect(() => {
@@ -90,6 +93,12 @@ function Map() {
         }
     }, [venues]);
 
+    const handleDetailDismiss = useCallback(() => {
+        setShowSmallDetail(null);
+        setShowSchedulesList(null);
+        setSelectedMarker(null);
+    }, []);
+
     const handleClusterClick = useCallback(
         (
             clusterProperties: Supercluster.ClusterFeature<C>["properties"],
@@ -101,7 +110,7 @@ function Map() {
             const {venues, cluster_id} = clusterProperties;
             const venueLat = venues[0].lat;
             const venueLon = venues[0].lon;
-            const isSame = !venues.find((venue) => venue.lat !== venueLat && venue.lon !== venueLon);
+            const isSame = !venues.find((venue) => venue.lat !== venueLat || venue.lon !== venueLon);
 
             if (index.current && !isSame) {
                 const zoom = index.current.getClusterExpansionZoom(cluster_id);
@@ -114,12 +123,25 @@ function Map() {
                 }
             }
 
-            const venueIds =
-                index.current?.getLeaves(cluster_id, Infinity).map((marker) => marker.properties.venue.id) || [];
+            if (selectedMarker === markerRef) {
+                handleDetailDismiss();
+                return;
+            }
 
-            markerRef && setSelectedMarker({venueIds, ref: markerRef});
+            handleDetailDismiss();
+
+            const scheduleListState: ScheduleListState = {venueIds: [], schedulesCount: 0};
+            for (const marker of index.current?.getLeaves(cluster_id, Infinity) || []) {
+                scheduleListState.venueIds.push(marker.properties.venue.id);
+                scheduleListState.schedulesCount += marker.properties.venue.schedules.length;
+            }
+
+            if (markerRef) {
+                setSelectedMarker(markerRef);
+                setShowSchedulesList(scheduleListState);
+            }
         },
-        [map, index, setSelectedMarker]
+        [map, index, selectedMarker]
     );
 
     const handleMarkerClick = useCallback(
@@ -130,18 +152,22 @@ function Map() {
         ) => {
             ev.stop();
 
-            if (selectedMarker && selectedMarker.venueIds.includes(venueId)) {
-                setSelectedMarker(null);
-                setShowSmallDetail(null);
+            if (selectedMarker === markerRef) {
+                handleDetailDismiss();
                 return;
             }
 
+            handleDetailDismiss();
+
             if (markerRef) {
-                setSelectedMarker({venueIds: [venueId], ref: markerRef});
-                setShowSmallDetail(venues.find((venue) => venue.id === venueId)?.schedules[0].id || null);
+                setSelectedMarker(markerRef);
+                const venue = venues.find((venue) => venue.id === venueId);
+                venue?.schedules.length === 1
+                    ? setShowSmallDetail(venue.schedules[0].id)
+                    : setShowSchedulesList({venueIds: [venueId], schedulesCount: venue?.schedules.length || 0});
             }
         },
-        [venues, selectedMarker, setSelectedMarker, setShowSmallDetail]
+        [venues, selectedMarker, handleDetailDismiss]
     );
 
     const handleIdle = useCallback(() => {
@@ -149,23 +175,23 @@ function Map() {
             map && setClusters(getClusters(index.current, map, venues));
             setBoundsChanged(false);
         }
-    }, [map, venues, setClusters, boundsChanged, setBoundsChanged]);
+    }, [map, venues, boundsChanged]);
 
     const handleBoundsChanged = useCallback(() => {
         setBoundsChanged(true);
-    }, [setBoundsChanged]);
+    }, []);
 
-    const handleDetailDismiss = useCallback(() => {
-        setSelectedMarker(null);
-        setShowSmallDetail(null);
-    }, [setSelectedMarker, setShowSmallDetail]);
+    const toggleDetail = useCallback((scheduleId: number) => {
+        setShowDetail((prev) => (prev ? null : scheduleId));
+    }, []);
 
-    const toggleDetail = useCallback(
+    const handleSmallDetailToggleDetail = useCallback(
         (scheduleId: number) => {
             setShowSmallDetail(null);
-            setShowDetail((prev) => (prev === scheduleId ? null : scheduleId));
+            setSelectedMarker(null);
+            toggleDetail(scheduleId);
         },
-        [setShowDetail, setShowSmallDetail]
+        [toggleDetail]
     );
 
     return (
@@ -186,12 +212,23 @@ function Map() {
                 onIdle={handleIdle}
                 onClick={handleDetailDismiss}
                 onDragstart={handleDetailDismiss}
+                onZoomChanged={handleDetailDismiss}
             >
                 {showSmallDetail && selectedMarker && (
                     <ScheduleDetailSmall
-                        markerRef={selectedMarker.ref}
+                        markerRef={selectedMarker}
                         scheduleId={showSmallDetail}
+                        onDetailToggle={handleSmallDetailToggleDetail}
+                    />
+                )}
+                {showSchedulesList && selectedMarker && (
+                    <ScheduleList
+                        venueIds={showSchedulesList.venueIds}
+                        markerRef={selectedMarker}
                         onDetailToggle={toggleDetail}
+                        scheduleSkeletonsCount={
+                            showSchedulesList.schedulesCount > 5 ? 5 : showSchedulesList.schedulesCount
+                        }
                     />
                 )}
                 {clusters.map((cluster) => {

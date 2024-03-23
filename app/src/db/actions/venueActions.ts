@@ -2,7 +2,8 @@
 
 import {GetVenuesFilters, GetVenuesResponse, InsertVenue, Venue} from "@/db/types";
 import db from "@/db/drizzle";
-import {venue} from "@/db/schema";
+import {schedule, venue} from "@/db/schema";
+import {gt} from "drizzle-orm";
 
 export const getVenuesIds = async (): Promise<{id: number; idGoout: number | null; idKudyznudy: string | null}[]> => {
     return db
@@ -25,7 +26,7 @@ export const getVenues = async (filters: GetVenuesFilters): Promise<GetVenuesRes
                 columns: {
                     id: true,
                 },
-                where: filters.active ? (schedule, {gt}) => gt(schedule.endAt, new Date()) : undefined,
+                where: filters.active ? gt(schedule.endAt, new Date()) : undefined,
                 with: {
                     event: {
                         columns: {

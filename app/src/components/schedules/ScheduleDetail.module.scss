@@ -18,8 +18,10 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  max-width: pxToRem(880);
+  max-width: min(calc(100% - 32px), pxToRem(880));
+  max-height: pxToRem(440);
   width: 100%;
+  height: 100%;
   background-color: white;
   border-radius: pxToRem(8);
   display: flex;
@@ -40,6 +42,17 @@
   display: flex;
   flex-direction: row;
   gap: pxToRem(24);
+
+  a {
+    color: blue;
+    text-decoration: underline;
+  }
+
+  ul {
+    list-style: initial;
+    padding-left: pxToRem(16);
+    margin: pxToRem(8);
+  }
 }
 
 .imgContainer {
@@ -78,13 +91,15 @@
   }
 }
 
-.eventImg,
-.eventImgSkeleton {
+.eventImg {
   width: pxToRem(360);
   height: pxToRem(240);
   object-fit: cover;
   border-radius: pxToRem(4);
   box-shadow: 0 0 pxToRem(4) pxToRem(2) rgba(0, 0, 0, 0.15);
+  background: linear-gradient(110deg, $shade100 8%, $shade50 18%, $shade100 33%);
+  background-size: 200% 100%;
+  animation: 1.5s shine linear infinite;
 }
 
 .links {
@@ -97,12 +112,15 @@
 .link {
   @include text-small;
 
-  color: blue;
-  text-decoration: underline;
   display: flex;
   flex-direction: row;
-  gap: pxToRem(2);
+  gap: pxToRem(4);
   align-items: center;
+  overflow-wrap: break-word;
+
+  svg {
+    flex: 0 0 pxToRem(12);
+  }
 }
 
 .description {
@@ -110,7 +128,7 @@
     margin-bottom: pxToRem(8);
   }
 
-  p:last-child {
+  :last-child {
     margin-bottom: 0;
   }
 }
@@ -148,14 +166,6 @@
   &:focus {
     outline: none;
   }
-}
-
-.eventImgSkeleton {
-  border-radius: pxToRem(4);
-  background: linear-gradient(110deg, $shade100 8%, $shade50 18%, $shade100 33%);
-  background-size: 200% 100%;
-  animation: 1.5s shine linear infinite;
-  box-shadow: none;
 }
 
 @keyframes shine {

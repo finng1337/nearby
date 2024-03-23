@@ -1,0 +1,83 @@
+@import "../../styles/functions";
+@import "../../styles/typography";
+@import "../../styles/variables";
+
+.schedule {
+  @include text-body;
+
+  height: pxToRem(80);
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: pxToRem(10);
+  padding: pxToRem(8);
+}
+
+.eventImg {
+  width: pxToRem(64);
+  height: pxToRem(64);
+  object-fit: cover;
+  border-radius: pxToRem(4);
+  box-shadow: 0 0 pxToRem(4) pxToRem(2) rgba(0, 0, 0, 0.15);
+  background: linear-gradient(110deg, $shade100 8%, $shade50 18%, $shade100 33%);
+  background-size: 200% 100%;
+  animation: 1.5s shine linear infinite;
+  flex: 0 0 pxToRem(64);
+}
+
+.date {
+  @include text-small;
+
+  color: $danger;
+
+  &::first-letter {
+    text-transform: uppercase;
+  }
+}
+
+.title {
+  @include multiline-ellipsis(2);
+
+  font-weight: bold;
+}
+
+.venue {
+  @include ellipsis;
+  @include text-small;
+
+  color: $shade500;
+}
+
+.categoryIcon {
+  position: absolute;
+  top: pxToRem(4);
+  right: pxToRem(4);
+}
+
+.skeleton {
+  .date,
+  .venue,
+  .title {
+    border-radius: pxToRem(4);
+    background: linear-gradient(110deg, $shade100 8%, $shade50 18%, $shade100 33%);
+    background-size: 200% 100%;
+    animation: 1.5s shine linear infinite;
+  }
+
+  .date,
+  .venue {
+    height: pxToRem(16);
+  }
+
+  .title {
+    height: pxToRem(20);
+  }
+}
+
+@keyframes shine {
+  to {
+    background-position-x: -200%;
+  }
+}

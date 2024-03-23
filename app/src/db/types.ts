@@ -38,17 +38,14 @@ export type GetScheduleResponse =
           startAt: Date;
           endAt: Date;
           event: {
-              id: number;
               title: string;
               description: string | null;
               images: any;
               category: {
-                  id: number;
                   value: string | null;
                   title: string | null;
               } | null;
               tags: {
-                  id: number;
                   tag: {
                       id: number;
                       title: string | null;
@@ -56,11 +53,29 @@ export type GetScheduleResponse =
               }[];
           };
           venue: {
-              id: number;
               title: string;
           };
       }
     | undefined;
+export type GetSchedulesResponse = {
+    id: number;
+    startAt: Date;
+    endAt: Date;
+    event: {
+        title: string;
+        images: any;
+        category: {
+            value: string | null;
+        } | null;
+    };
+    venue: {
+        title: string;
+    };
+}[];
+export type GetSchedulesFilters = {
+    active?: boolean;
+    venueIds?: number[];
+};
 export enum CategoryTypeEnum {
     FESTIVAL = "festival",
     SPORT = "sport",

@@ -21,7 +21,7 @@ function ScheduleListItem(props: Props) {
         return (
             <div className={cx({[styles.schedule]: true, [styles.skeleton]: true})}>
                 <div className={styles.eventImg} />
-                <div className="flex flex-col gap-0.5 w-full">
+                <div className={styles.info}>
                     <div className={styles.date} />
                     <div className={styles.title} />
                     <div className={styles.venue} />
@@ -39,7 +39,7 @@ function ScheduleListItem(props: Props) {
                 <CategoryIcon category={(event.category?.value as CategoryTypeEnum) || null} size={20} colored />
             </div>
             <Image src={eventImg} alt={event.title} width={128} height={128} className={styles.eventImg} />
-            <div className="flex flex-col gap-0.5 w-full">
+            <div className={styles.info}>
                 <div className={styles.date}>{formatDate(schedule.startAt, schedule.endAt)}</div>
                 <h2 className={styles.title}>{event.title}</h2>
                 <span className={styles.venue}>{schedule.venue.title}</span>

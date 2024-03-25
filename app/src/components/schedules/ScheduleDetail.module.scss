@@ -122,6 +122,10 @@
   :global(.bg-categoryGastronomy) {
     color: black;
   }
+
+  @media screen and (max-width: $breakpoint-sm) {
+    justify-content: center;
+  }
 }
 
 .eventImg {

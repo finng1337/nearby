@@ -41,6 +41,33 @@ const getClusters = (
     return [];
 };
 
+const loadNewIndex = (venues: GetVenuesResponse): Supercluster<P, C> => {
+    const index = new Supercluster<P, C>({
+        radius: 160,
+        maxZoom: 20,
+        map: (props) => ({venues: [props.venue]}),
+        reduce: (accumulated, props) => {
+            accumulated.venues = [...accumulated.venues, ...props.venues];
+        },
+    });
+
+    index.load(
+        venues.map(
+            (venue) =>
+                ({
+                    type: "Feature",
+                    geometry: {
+                        type: "Point",
+                        coordinates: [parseFloat(venue.lon), parseFloat(venue.lat)],
+                    },
+                    properties: {venue},
+                }) as Supercluster.PointFeature<P>
+        )
+    );
+
+    return index;
+}
+
 const getSchedulesCount = (venues: GetVenuesResponse): number => {
     return venues.reduce((acc, venue) => {
         return acc + venue.schedules.length;
@@ -66,32 +93,22 @@ function Map() {
     }, []);
 
     useEffect(() => {
-        if (venues.length > 0) {
-            index.current = new Supercluster<P, C>({
-                radius: 160,
-                maxZoom: 20,
-                map: (props) => ({venues: [props.venue]}),
-                reduce: (accumulated, props) => {
-                    accumulated.venues = [...accumulated.venues, ...props.venues];
-                },
-            });
-            index.current.load(
-                venues.map(
-                    (venue) =>
-                        ({
-                            type: "Feature",
-                            geometry: {
-                                type: "Point",
-                                coordinates: [parseFloat(venue.lon), parseFloat(venue.lat)],
-                            },
-                            properties: {venue},
-                        }) as Supercluster.PointFeature<P>
-                )
-            );
-
-            map && setClusters(getClusters(index.current, map, venues));
-        }
+        index.current = loadNewIndex(venues);
+        map && setClusters(getClusters(index.current, map, venues));
     }, [venues]);
+
+    useEffect(() => {
+        if (map) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                };
+                map.panTo(pos);
+                map.setZoom(15);
+            });
+        }
+    }, [map]);
 
     const handleDetailDismiss = useCallback(() => {
         setShowSmallDetail(null);
@@ -118,7 +135,6 @@ function Map() {
                 if (zoom <= 19) {
                     ev.latLng && map?.panTo(ev.latLng);
                     map?.setZoom(zoom);
-                    setSelectedMarker(null);
                     return;
                 }
             }
@@ -131,9 +147,9 @@ function Map() {
             handleDetailDismiss();
 
             const scheduleListState: ScheduleListState = {venueIds: [], schedulesCount: 0};
-            for (const marker of index.current?.getLeaves(cluster_id, Infinity) || []) {
-                scheduleListState.venueIds.push(marker.properties.venue.id);
-                scheduleListState.schedulesCount += marker.properties.venue.schedules.length;
+            for (const venue of venues) {
+                scheduleListState.venueIds.push(venue.id);
+                scheduleListState.schedulesCount += venue.schedules.length;
             }
 
             if (markerRef) {

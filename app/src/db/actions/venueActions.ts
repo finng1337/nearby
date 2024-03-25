@@ -52,7 +52,8 @@ export const getVenues = unstable_cache(
     },
     ["getVenues"],
     {
-        revalidate: 60 * 60 * 3600, // 24 hours
+        tags: ["query"],
+        revalidate: false
     }
 );
 export const addVenue = async (insertVenue: InsertVenue): Promise<Venue> => {

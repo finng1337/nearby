@@ -16,4 +16,10 @@ const crawler = new BasicCrawler({
 );
 
 await crawler.run([gooutURL(null)]);
-await fetch(API_URL);
+await fetch(API_URL, {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+    },
+    body: JSON.stringify({tags: ["query"]}),
+});

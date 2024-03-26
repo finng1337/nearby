@@ -1,0 +1,16 @@
+@import "../styles/functions";
+@import "../styles/variables";
+
+.filters {
+  position: absolute;
+  z-index: 10;
+  top: pxToRem(32);
+  left: pxToRem(40);
+
+  @media screen and (max-width: $breakpoint-sm) {
+    top: unset;
+    left: unset;
+    right: pxToRem(10);
+    bottom: pxToRem(115);
+  }
+}

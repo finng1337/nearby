@@ -1,0 +1,25 @@
+@import "../../styles/functions";
+@import "../../styles/variables";
+
+.button {
+  width: pxToRem(40);
+  height: pxToRem(40);
+  background-color: white;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: pxToRem(3) pxToRem(6) pxToRem(4) rgba(0, 0, 0, 0.3);
+
+  &.active {
+    color: $success
+  }
+
+  &.disabled {
+    color: $danger;
+  }
+
+  @media screen and (max-width: $breakpoint-sm) {
+    box-shadow: 0 pxToRem(2) pxToRem(8) rgba(0, 0, 0, 0.4);
+  }
+}

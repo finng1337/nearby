@@ -10,6 +10,8 @@ import {getVenues} from "@/db/actions/venueActions";
 import ScheduleDetailSmall from "@/components/schedules/ScheduleDetailSmall";
 import ScheduleDetail from "@/components/schedules/ScheduleDetail";
 import ScheduleList from "@/components/schedules/ScheduleList";
+import Filters from "@/components/filtering/Filters";
+import styles from "./Map.module.scss";
 
 interface P {
     venue: GetVenuesResponse[0];
@@ -96,19 +98,6 @@ function Map() {
         index.current = loadNewIndex(venues);
         map && setClusters(getClusters(index.current, map, venues));
     }, [venues]);
-
-    useEffect(() => {
-        if (map) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const pos = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude,
-                };
-                map.panTo(pos);
-                map.setZoom(15);
-            });
-        }
-    }, [map]);
 
     const handleDetailDismiss = useCallback(() => {
         setShowSmallDetail(null);
@@ -212,6 +201,7 @@ function Map() {
 
     return (
         <>
+            <Filters className={styles.filters} />
             {showDetail && <ScheduleDetail scheduleId={showDetail} onDismiss={toggleDetail} />}
             <GoogleMap
                 mapId={process.env.NEXT_PUBLIC_GOOGLE_MAP_ID!}
